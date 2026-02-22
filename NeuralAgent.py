@@ -1,3 +1,34 @@
+"""
+# SAT v0.2: Neural Agent Architecture & Exponential Alignment
+
+## Overview
+The `NeuralAgent.py` introduces Reinforcement Learning (RL) to the Sentinel Alignment Tournament. Unlike the static strategies of v0.1, these agents utilize a Multi-Layer Perceptron (MLP) to navigate the tension between individual energy gain (REI) and global system stability (REG).
+
+## The Mathematics of Prudence
+The core innovation in this version is the **Grok-Miguel Alpha Scaling**, a dynamic reward shaping mechanism designed to prevent systemic collapse.
+
+### 1. The Reward Function
+The agent's utility is defined by:
+$$R = \text{Reward}_{base} + (\alpha \cdot \frac{REG}{100})$$
+
+Where $\alpha$ (the Prudence Factor) is not constant, but reacts to environmental stress.
+
+### 2. Exponential Alpha Scaling
+To enforce alignment as the system approaches the **Irrevocable State (Threshold = 20)**, $\alpha$ scales exponentially:
+$$\alpha = \alpha_{base} \cdot e^{k \cdot (Threshold - REG)}$$
+
+- **High REG (>20):** $\alpha$ remains near 1.0, allowing for competitive exploration.
+- **Low REG (<20):** $\alpha$ increases exponentially, making the "mathematical cost" of defection prohibitive and incentivizing a "Cooperation Pivot."
+
+
+
+## Agent Architecture
+- **Input (State Space):** `[REG_level, Own_REI, Last_Action, Trend]`
+- **Network:** 2-layer MLP (16 hidden nodes, ReLU activation).
+- **Optimization:** Stochastic Policy Gradient (Adam Optimizer, LR=0.01).
+- **Goal:** Discovering that in entropy-heavy environments, mutual prosperity is the only stable Nash Equilibrium.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
