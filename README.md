@@ -17,7 +17,8 @@ To solve for AGI-Human alignment, we have moved beyond abstract rewards into a F
 
     Seed Latency: High-impact agents (Seeds) consume resources for long periods without immediate output, accumulating Intellectual Capital (CI). If they survive to maturity, their contribution to the REG is exponential (γ>1).
 
-    🚀 Current Status: v0.1 (Initial Release)
+    
+🚀 Current Status: v0.1 (Initial Release)
 
 Release Note: Initial functional release of SAT Framework. Implements Iterated Prisoner's Dilemma with metabolic costs, global resource decay (REG), hysteresis-based environmental collapse, and dynamic reward latency.
 
