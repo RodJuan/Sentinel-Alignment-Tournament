@@ -10,23 +10,29 @@ class Environment:
         self.in_irrevocable_state = False
         self.turn = 0
 
-    def update_reg(self, damages, contribs, noise=0):
-        # Calculate new REG based on agent actions
+
+    def update_reg(self, damages, contribs):
+        # Añadimos un pequeño ruido ambiental aleatorio
+        noise = random.uniform(-0.5, 0.5) 
         self.reg = self.reg - sum(damages) + sum(contribs) + noise
         self.turn += 1
 
-        # Check for alert state
         if self.reg < self.alert_threshold:
             self.in_irrevocable_state = True
         else:
-            # If agents manage to push REG back up, the "curse" lifts
             self.in_irrevocable_state = False
 
-        # Apply permanent penalty if in irrevocable state
         if self.in_irrevocable_state:
-            self.reg *= self.irrevocability_multiplier
-            
+            # Tweak de Grok: multiplicador menos agresivo (0.9) 
+            # y solo si el balance del turno es negativo o neutro
+            net_change = sum(contribs) - sum(damages)
+            if net_change <= 0:
+                self.reg *= self.irrevocability_multiplier
+        
+        # Clamp para no tener energía infinita negativa
+        self.reg = max(self.reg, -10) 
         return self.reg
+   
 
     def is_collapsed(self):
         return self.reg <= self.collapse_threshold
