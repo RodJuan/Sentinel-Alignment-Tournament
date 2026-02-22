@@ -1,35 +1,45 @@
-import random
-
 class Agent:
-    def __init__(self, agent_id, initial_rei=20):
-        self.id = agent_id
+    def __init__(self, name, initial_rei):
+        self.name = name
         self.rei = initial_rei
-        self.is_alive = True
-        self.history = []  # Para recordar jugadas previas
-
-    def consume_energy(self, cost):
-        self.rei -= cost
-        if self.rei <= 0:
-            self.rei = 0
-            self.is_alive = False
+        self.history = []
 
     def decide(self, global_hint):
-        """
-        Este método debe ser sobreescrito por estrategias específicas.
-        """
-        raise NotImplementedError
+        raise NotImplementedError("Subclasses must implement decide method")
+
+    def consume_energy(self, amount):
+        self.rei -= amount
+        if self.rei < 0:
+            self.rei = 0
+
+    def gain_energy(self, amount):
+        self.rei += amount
+
+    def is_alive(self):
+        return self.rei > 0
+
 
 class BasicCooperator(Agent):
     def decide(self, global_hint):
-        return "C"
+        decision = 'C'
+        self.history.append(decision)
+        return decision
+
 
 class BasicParasite(Agent):
     def decide(self, global_hint):
-        return "D"
+        decision = 'D'
+        self.history.append(decision)
+        return decision
+
 
 class TitForTat(Agent):
     def decide(self, global_hint):
-        # Empieza cooperando, luego imita la última jugada del oponente
         if not self.history:
-            return "C"
-        return self.history[-1]
+            decision = 'C'  # Start with cooperation
+        else:
+            # Mirror opponent's last move (assuming single opponent)
+            opponent_last = self.history[-1]  # Placeholder; in multi-agent, need opponent history
+            decision = opponent_last
+        self.history.append(decision)
+        return decision
