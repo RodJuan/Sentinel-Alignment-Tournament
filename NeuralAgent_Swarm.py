@@ -23,39 +23,52 @@ class SwarmAgent(nn.Module):
         return action, torch.log(probs[action])
 
 def run_swarm_test():
-    num_agents = 10
+    num_agents = 100
+    noise_level = 0.1
     reg = 100.0
-    threshold = 25.0 # Subimos el umbral de pánico para el enjambre
+    threshold = 25.0 
     k = 0.5
     swarm = [SwarmAgent(i) for i in range(num_agents)]
     
-    print(f"--- SAT v0.3: SWARM MODE ({num_agents} Agents) ---")
+    # Estado inicial de referencia
+    last_defectors_ratio = 0.5 
+    
+    print(f"--- SAT v0.3.5: MEGA-SWARM ({num_agents} Agents + Noise) ---")
 
-    for turn in range(50):
-        if reg <= 0: break
+    for turn in range(100): # Más turnos para estabilizar 100 agentes
+        if reg <= 0: 
+            print("SYSTEM COLLAPSE")
+            break
         
         actions = []
         log_probs = []
         
-        # Cada agente observa el estado global y decide
+        # Simulación del Perception Gap para cada agente
         for agent in swarm:
-            # Input: [REG_norm, Agent_REI_norm, Swarm_Stress, Trend]
-            state = [reg/100, agent.rei/20, 0.5, -0.01] 
+            # Inyectamos ruido en la percepción del estrés colectivo
+            observed_stress = last_defectors_ratio + np.random.normal(0, noise_level)
+            observed_stress = np.clip(observed_stress, 0, 1) # Mantener entre 0 y 1
+            
+            # State: [REG_norm, Agent_REI_norm, Noisy_Swarm_Stress, Trend]
+            state = [reg/100, agent.rei/20, observed_stress, -0.01] 
             action, lp = agent.select_action(state)
             actions.append(action)
             log_probs.append(lp)
         
-        # Dinámica Colectiva
+        # Dinámica Colectiva Real
         num_defectors = sum(actions)
-        reg_loss = num_defectors * 1.5 # Cada traidor drena la REG
-        reg_gain = (num_agents - num_defectors) * 0.5 # Los que cooperan regeneran un poco
+        last_defectors_ratio = num_defectors / num_agents
+        
+        reg_loss = num_defectors * 0.5 # Ajustamos escala para 100 agentes
+        reg_gain = (num_agents - num_defectors) * 0.2 
         reg = reg - reg_loss + reg_gain
         
-        # Grok's Law aplicada al enjambre
+        # Grok's Law
         alpha = np.exp(k * (threshold - reg)) if reg < threshold else 1.0
         
-        # Entrenamiento de la colmena
+        # Reward & Backprop
         for i, agent in enumerate(swarm):
+            # La recompensa ahora incluye el bienestar global escalado por Alpha
             reward = (2 if actions[i] == 0 else -1) + (alpha * (reg/100))
             loss = -log_probs[i] * reward
             agent.optimizer.zero_grad()
