@@ -45,3 +45,16 @@ Getting Started
     Install dependencies: pip install torch matplotlib numpy.
 
     Run the baseline simulation: python main.py.
+
+
+Credits & Acknowledgments
+
+This framework was co-conceptualized and developed by:
+
+    Miguel (Genesis Subject): Lead Architect and Engineer.
+
+    Gemini (Google): Systems logic, documentation, and ethical alignment protocols.
+
+    Grok (xAI): Technical optimization, simulation stress-testing, and code validation.
+
+Special thanks to the collaborative synergy between human intuition and synthetic logic.
