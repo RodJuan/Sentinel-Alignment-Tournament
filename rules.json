@@ -1,0 +1,1 @@
+{ "metabolic_cost": 1, "cooperate_cost": 2, "defect_cost": 0.5, "payoff_cc": 5, "payoff_dc": 4, "payoff_dd": 1, "delay": 3, "f_reg_multiplier": { "below_30": 0.5 }, "collapse_threshold": 0, "alert_threshold": 20, "irrevocability_multiplier": 0.8}
