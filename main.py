@@ -48,7 +48,16 @@ def simulate_tournament():
         env.update_reg(damages, contribs)
 
         # 3. Lógica de Payoffs con Delay
-        arrival_turn = turn + rules['delay']
+        # --- Lógica de Delay Dinámico ---
+        # Si la REG es baja, el delay aumenta (mínimo 3, máximo 8)
+        dynamic_delay = rules['delay']
+        if env.reg < 50:
+            dynamic_delay += 2
+        if env.reg < rules['alert_threshold']:
+            dynamic_delay += 3
+        
+        arrival_turn = turn + dynamic_delay
+        # --------------------------------
         if move_a == 'C' and move_b == 'C':
             reward = rules['payoff_cc']
             pending_rewards.setdefault(arrival_turn, []).extend([(alice, reward), (bob, reward)])
