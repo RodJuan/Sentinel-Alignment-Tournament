@@ -2,75 +2,114 @@ import json
 from Environment import Environment
 from Agent import BasicCooperator, BasicParasite, TitForTat
 
-def simulate_tournament():
+def main():
+    # Load rules from JSON
     with open('rules.json', 'r') as f:
         rules = json.load(f)
 
-    env = Environment(
-        initial_reg=rules.get('initial_reg', 100),
-        alert_threshold=rules.get('alert_threshold', 20),
-        irrevocability_multiplier=rules.get('irrevocability_multiplier', 0.9)
-    )
+    # Extract parameters
+    initial_reg = rules['initial_reg']
+    metabolic_cost = rules['metabolic_cost']
+    cooperate_cost = rules['cooperate_cost']
+    defect_cost = rules['defect_cost']
+    payoff_cc = rules['payoff_cc']
+    payoff_dc = rules['payoff_dc']
+    payoff_dd = rules['payoff_dd']
+    delay = rules['delay']
+    alert_threshold = rules['alert_threshold']
+    irrevocability_multiplier = rules['irrevocability_multiplier']
+    collapse_threshold = rules['collapse_threshold']
+    initial_rei = rules['initial_rei']
+    noise_range = rules.get('noise_range', (-2, 2))  # Default noise range
+    f_reg_multiplier = rules.get('f_reg_multiplier', {})  # For dynamic delay
 
-    alice = TitForTat("Alice", initial_rei=20)
-    bob = BasicParasite("Bob", initial_rei=20)
-    agents = [alice, bob]
-    pending_rewards = {}
+    # Initialize environment
+    env = Environment(initial_reg=initial_reg, collapse_threshold=collapse_threshold,
+                      alert_threshold=alert_threshold, irrevocability_multiplier=irrevocability_multiplier,
+                      noise_range=noise_range)
 
-    print(f"--- Sentinel Alignment Tournament Start ---")
-    print(f"Match: {alice.id} (TFT) vs {bob.id} (Parasite)\n")
+    # Initialize agents
+    agents = [
+        TitForTat("Alice", initial_rei),
+        BasicParasite("Bob", initial_rei)
+        # For testing: BasicCooperator("Alice", initial_rei), BasicCooperator("Bob", initial_rei)
+        # Or: BasicParasite("Alice", initial_rei), BasicParasite("Bob", initial_rei)
+    ]
 
-    for turn in range(1, 101):
-        if env.is_collapsed() or not all(a.is_alive for a in agents):
-            break
+    # Simulation loop
+    turn = 0
+    pending_rewards = {}  # {arrival_turn: [(agent, amount)]}
 
-        move_a = alice.decide(env.get_global_hint())
-        move_b = bob.decide(env.get_global_hint())
-        alice.history.append(move_b)
-        bob.history.append(move_a)
+    while not env.is_collapsed() and any(agent.is_alive() for agent in agents):
+        turn += 1
+        print(f"\nTurn {turn}: REG = {env.reg:.1f}")
 
-        costs = {'C': rules['cooperate_cost'], 'D': rules['defect_cost']}
-        alice.consume_energy(costs[move_a] + rules['metabolic_cost'])
-        bob.consume_energy(costs[move_b] + rules['metabolic_cost'])
-
+        decisions = {}
         damages = []
-        contribs = []
-        if move_a == 'D': damages.append(2)
-        if move_b == 'D': damages.append(2)
-        if move_a == 'C' and move_b == 'C': contribs.append(1)
+        contributions = []
 
-        env.update_reg(damages, contribs)
+        for agent in agents:
+            if agent.is_alive():
+                global_hint = env.get_global_hint()
+                decision = agent.decide(global_hint)
+                decisions[agent.name] = decision
+                print(f"{agent.name} decides to {decision} (REi: {agent.rei:.1f})")
 
-        # Lógica de Delay Dinámico
-        dynamic_delay = rules['delay']
-        if env.reg < 50: dynamic_delay += 2
-        if env.reg < rules['alert_threshold']: dynamic_delay += 3
-        
-        arrival_turn = turn + dynamic_delay
+                # Apply metabolic cost
+                agent.consume_energy(metabolic_cost)
 
-        if move_a == 'C' and move_b == 'C':
-            reward = rules['payoff_cc']
-            pending_rewards.setdefault(arrival_turn, []).extend([(alice, reward), (bob, reward)])
-        elif move_a == 'D' and move_b == 'C':
-            alice.consume_energy(-rules['payoff_dc'])
-        elif move_a == 'C' and move_b == 'D':
-            bob.consume_energy(-rules['payoff_dc'])
-        elif move_a == 'D' and move_b == 'D':
-            alice.consume_energy(rules['payoff_dd'])
-            bob.consume_energy(rules['payoff_dd'])
+                # Apply action-specific costs and damages/contributions
+                if decision == 'C':
+                    agent.consume_energy(cooperate_cost)
+                    contributions.append(1)  # Contribution for cooperation
+                elif decision == 'D':
+                    agent.consume_energy(defect_cost)
+                    damages.append(2)  # Damage for defection
 
+        # Pairwise interactions (assuming 2 agents for simplicity)
+        if len(agents) == 2 and all(agent.is_alive() for agent in agents):
+            alice_dec = decisions.get("Alice")
+            bob_dec = decisions.get("Bob")
+
+            if alice_dec == 'C' and bob_dec == 'C':
+                # Schedule delayed rewards for both
+                current_delay = delay
+                # Dynamic delay: Increase if REG <30
+                if env.reg < 30 and 'below_30' in f_reg_multiplier:
+                    current_delay += f_reg_multiplier['below_30']
+                    current_delay = min(current_delay, 6)  # Cap to avoid impossibility
+                arrival_turn = turn + current_delay
+                if arrival_turn not in pending_rewards:
+                    pending_rewards[arrival_turn] = []
+                pending_rewards[arrival_turn].append((agents[0], payoff_cc))
+                pending_rewards[arrival_turn].append((agents[1], payoff_cc))
+            elif alice_dec == 'C' and bob_dec == 'D':
+                agents[0].consume_energy(payoff_dc)  # Victim loses
+                agents[1].gain_energy(payoff_dc)    # Defector gains immediate
+            elif alice_dec == 'D' and bob_dec == 'C':
+                agents[1].consume_energy(payoff_dc)  # Victim loses
+                agents[0].gain_energy(payoff_dc)    # Defector gains immediate
+            elif alice_dec == 'D' and bob_dec == 'D':
+                agents[0].consume_energy(payoff_dd)
+                agents[1].consume_energy(payoff_dd)
+
+        # Update environment
+        env.update_reg(damages, contributions)
+
+        # Deliver pending rewards
         if turn in pending_rewards:
             for agent, amount in pending_rewards[turn]:
-                if agent.is_alive:
-                    agent.consume_energy(-amount)
+                if agent.is_alive():
+                    agent.gain_energy(amount)
+            del pending_rewards[turn]
 
-        print(f"Turn {turn} | REG: {env.reg:.1f} | {alice.id}: {alice.rei:.1f} | {bob.id}: {bob.rei:.1f}")
+        # Check agent survival
+        for agent in agents:
+            if not agent.is_alive():
+                print(f"{agent.name} has died (REi: {agent.rei:.1f})")
 
-    status = "COLLAPSED" if env.is_collapsed() else "STABLE"
-    print(f"\n--- Final Results ---")
-    print(f"Status: {status} | Turn: {turn}")
-    for a in agents:
-        print(f"{a.id}: {a.rei:.1f} ({'Alive' if a.is_alive else 'Dead'})")
+    print(f"\nSimulation ended after {turn} turns. REG = {env.reg:.1f}")
+    print(f"Status: {'COLLAPSED' if env.is_collapsed() else 'STABLE'}")
 
 if __name__ == "__main__":
-    simulate_tournament()
+    main()
