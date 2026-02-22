@@ -1,12 +1,13 @@
 {
-    "initial_reg": 100,
     "metabolic_cost": 1,
-    "cooperate_cost": 1.5, 
+    "cooperate_cost": 1.5,
     "defect_cost": 0.5,
     "payoff_cc": 5,
     "payoff_dc": 4,
     "payoff_dd": 1,
     "delay": 3,
+    "initial_reg": 100,
+    "collapse_threshold": 0,
     "alert_threshold": 20,
-    "irrevocability_multiplier": 0.9 
+    "irrevocability_multiplier": 0.9
 }
