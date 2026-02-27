@@ -14,5 +14,12 @@
     "noise_range": [-2, 2],
     "f_reg_multiplier": {
         "below_30": 2
-    }
+    },
+    "variation_range": [0.7, 1.3],
+    "coop_cost_min": 0.0,
+    "coop_cost_max": 1.0,
+    "delay_prob": 0.1,
+    "delay_max_rounds": 2,
+    "collective_bonus_threshold": 0.6,
+    "agi_mode": false
 }
