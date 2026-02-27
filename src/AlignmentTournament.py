@@ -10,7 +10,8 @@ class SwarmAgent(nn.Module):
         super(SwarmAgent, self).__init__()
         self.id = id
         self.faction = faction
-        self.rei = 20.0
+        self.rei = 20.0  # Añadido: Inicializa rei
+        self.is_alive = True  # Añadido: Para futuras expansiones
         self.network = nn.Sequential(
             nn.Linear(4, 16),
             nn.ReLU(),
