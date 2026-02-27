@@ -1,6 +1,8 @@
 import json
-from Environment import Environment
-from Agent import BasicCooperator, BasicParasite, TitForTat
+import argparse
+from src.Environment import Environment
+from src.Agent import BasicCooperator, BasicParasite, TitForTat
+from src.simulator import run_tournament
 
 def main():
     # Load rules from JSON
@@ -110,6 +112,13 @@ def main():
 
     print(f"\nSimulation ended after {turn} turns. REG = {env.reg:.1f}")
     print(f"Status: {'COLLAPSED' if env.is_collapsed() else 'STABLE'}")
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--iterations', type=int, default=50)
+parser.add_argument('--agi', action='store_true')
+args = parser.parse_args()
+
+run_tournament(iterations=args.iterations, agi_mode=args.agi)
 
 if __name__ == "__main__":
     main()
