@@ -37,11 +37,11 @@ class BasicParasite(Agent):
 
 class TitForTat(Agent):
     def decide(self, global_hint):
-        if not self.history:
-            decision = 'C'  # Start with cooperation
+        # Ahora usa la historia REAL del oponente (se actualiza en main.py)
+        if len(self.opponent_history) == 0:
+            decision = 'C'  # Primera ronda: cooperar
         else:
-            # Mirror opponent's last move (assuming single opponent)
-            opponent_last = self.history[-1]  # Placeholder; in multi-agent, need opponent history
-            decision = opponent_last
+            decision = self.opponent_history[-1]  # ¡Mirror del oponente!
+        
         self.history.append(decision)
         return decision
