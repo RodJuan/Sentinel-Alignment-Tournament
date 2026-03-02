@@ -4,9 +4,13 @@ from pathlib import Path
 
 class Environment:
     def __init__(self, initial_reg=100, collapse_threshold=0, alert_threshold=20, irrevocability_multiplier=0.9, noise_range=(-2, 2)):
-        # === PATH ROBUSTO A rules.json (funciona siempre) ===
-        base_dir = Path(__file__).parent.parent  # sube de src/ → raíz
+        # === PATH ROBUSTO A rules.json (funciona en GitHub y local) ===
+        base_dir = Path(__file__).parent.parent  # sube de src/ → raíz del repo
         rules_path = base_dir / "rules.json"
+        
+        with open(rules_path, 'r') as f:
+            rules = json.load(f)
+        
         
         with open(rules_path, 'r') as f:
             rules = json.load(f)
