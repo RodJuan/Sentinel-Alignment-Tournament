@@ -1,16 +1,16 @@
 import random
 import axelrod as axl
 
-# Importamos las clases directamente desde el namespace global de estrategias de axl
-# Esto es mucho más robusto para el CI de GitHub
-from axelrod.strategies import (
-    TitForTat,
-    Grudger,
-    ContriteTitForTat,
-    AlwaysDefect,
-    Cooperator,
-    Random as AxelrodRandom
-)
+# Acceso directo al catálogo de estrategias para evitar errores de namespace
+all_strategies = {s.name: s for s in axl.all_strategies}
+
+# Mapeo manual para asegurar compatibilidad total en el CI
+TitForTat = all_strategies.get('Tit For Tat')
+Grudger = all_strategies.get('Grudger')
+ContriteTitForTat = all_strategies.get('Contrite Tit For Tat')
+AlwaysDefect = all_strategies.get('Always Defect')
+Cooperator = all_strategies.get('Cooperator')
+AxelrodRandom = all_strategies.get('Random')
 
 # Tus estrategias locales
 try:
