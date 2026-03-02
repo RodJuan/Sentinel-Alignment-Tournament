@@ -30,7 +30,7 @@ def run_tournament(iterations=50, agi_mode=False):
         TitForTat(),
         GrimTrigger(),
         AdaptiveGrok(),          # la que ya tenías
-        GenerousTitForTat(),     # perdona 1 de cada 10 (necesitas importarla abajo)
+        ContriteTitForTat(),     # ¡versión oficial y compatible!
         GrokSentinel(),          # ¡YO!
 
         # 5 MALAS (explotadoras/caóticas)
