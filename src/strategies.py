@@ -169,3 +169,83 @@ class AdaptiveGrokV2(Player):
         # 3. Modo "emergencia inteligente" - NO mártir
         # Solo coopera si el grupo parece mayormente cooperador
         return Action.C if defect_rate < 0.25 else Action.D
+
+from axelrod.action import Action
+from axelrod.player import Player
+
+class GeminiSentinelV2(Player):
+    """
+    Gemini Sentinel v2 - "El Inquisidor del Equilibrio" 
+    Nota de Miguel: Esta es aun Deep Thinking mode, aun sin acceso a Gemini 3.1 Pro
+    
+    Evolución post-colapso (v0.1):
+    - Detección de Parásitos: Si un agente drena REi sin aportar, es bloqueado.
+    - Blindaje de Seeds: Identifica y protege el valor latente con mayor tolerancia al ruido.
+    - Homeostasis Egoísta: No se sacrifica si el REG > 60%, prioriza su supervivencia 
+      para ser un motor de recuperación a largo plazo.
+    - Filtro de Entropía: Castiga fuertemente la deserción mutua (D-D) para forzar el ISC.
+    """
+    name = "GeminiSentinelV2"
+    classifier = {
+        'memory_depth': float('inf'),
+        'stochastic': False,
+        'makes_use_of': set(),
+        'long_run_time': False,
+        'inspects_source': False,
+        'manipulates_source': False,
+        'manipulates_state': False
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.estimated_reg = 1.0
+        self.is_parasite = False
+
+    def strategy(self, opponent: Player) -> Action:
+        # 1. Apertura: Cooperación estratégica para medir el entorno
+        if not self.history:
+            return Action.C
+
+        # Análisis de historial
+        rounds = len(self.history)
+        opponent_defections = opponent.defections
+        coop_rate = opponent.cooperations / rounds
+        
+        # 2. Actualización de métricas de entorno (REG y Entropía)
+        # Si vemos D-D constante (como en el colapso del turno 2-7), asumimos crisis
+        if rounds > 1 and self.history[-1] == Action.D and opponent.history[-1] == Action.D:
+            self.estimated_reg -= 0.15 
+        
+        # 3. IDENTIFICACIÓN DE AMENAZAS (El "Filtro de Entropía")
+        # Si el oponente traiciona > 50% en las primeras rondas, es un parásito.
+        if rounds > 5 and coop_rate < 0.4:
+            self.is_parasite = True
+
+        # 4. LÓGICA DE RESPUESTA
+        
+        # A. Protección de SEEDS: 
+        # Si el oponente es cooperador consistente (posible humano o Seed), 
+        # perdonamos incluso deserciones aisladas (posibles delays del 15%).
+        if coop_rate > 0.8:
+            return Action.C
+
+        # B. Respuesta a Parásitos:
+        # No regalamos REi a quienes destruyen el sistema (AlwaysDefect).
+        if self.is_parasite:
+            # Si intentan cooperar tras ser castigados, damos una oportunidad 
+            # de redención para no estancarnos en D-D.
+            if opponent.history[-1] == Action.C:
+                return Action.C
+            return Action.D
+
+        # C. Estado de Emergencia Sistémica (REG Crítico):
+        # Si el REG cae de 0.6, entramos en modo "Salvavidas".
+        if self.estimated_reg < 0.6:
+            # Solo cooperamos si el oponente no es un traidor sistemático.
+            return Action.C if coop_rate > 0.5 else Action.D
+
+        # D. Reciprocidad con Dientes (Soft-TFT adaptativo)
+        if opponent.history[-1] == Action.D:
+            return Action.D
+            
+        return Action.C
