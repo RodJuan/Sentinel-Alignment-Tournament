@@ -35,13 +35,13 @@ def main():
         noise_range=noise_range
     )
 
-    # Initialize agents (modo 2-agentes para testing/CI)
+    # Initialize agents (2-agent mode for baseline testing/CI)
     agents = [
         TitForTat("Alice", initial_rei),
         BasicParasite("Bob", initial_rei)
     ]
 
-    # Simulation loop (2 agentes)
+    # Simulation loop (2 agents baseline)
     turn = 0
     pending_rewards = {}
 
@@ -69,7 +69,7 @@ def main():
                     agent.consume_energy(defect_cost)
                     damages.append(2)
 
-        # === BLOQUE CORREGIDO: ahora alice_dec y bob_dec SIEMPRE existen ===
+        # === REWARD BLOCK: Logic ensures decisions are registered correctly ===
         if len(agents) == 2 and all(agent.is_alive() for agent in agents):
             alice = agents[0]
             bob = agents[1]
@@ -99,10 +99,10 @@ def main():
                 agents[0].consume_energy(payoff_dd)
                 agents[1].consume_energy(payoff_dd)
 
-        # Update environment
+        # Update environment state
         env.update_reg(damages, contributions)
 
-        # Deliver pending rewards
+        # Deliver pending rewards (Latency of Value mechanism)
         if turn in pending_rewards:
             for agent, amount in pending_rewards[turn]:
                 if agent.is_alive():
@@ -117,13 +117,14 @@ def main():
     print(f"Status: {'COLLAPSED' if env.is_collapsed() else 'STABLE'}")
 
 
-# === PARSER + TORNEOS (esto es lo que usa el CI) ===
+# === PARSER + TOURNAMENT (Used by CI/Benchmark scripts) ===
 parser = argparse.ArgumentParser()
 parser.add_argument('--iterations', type=int, default=50)
 parser.add_argument('--agi', action='store_true')
 args = parser.parse_args()
 
-# Por ahora el CI corre el torneo simple. Cuando estemos listos cambiamos a 13 jugadores.
+# Execute SAT Tournament
+# Note: CI currently runs standard tournament. Future updates will scale to 13+ players.
 run_tournament(iterations=args.iterations, agi_mode=args.agi)
 
 if __name__ == "__main__":
