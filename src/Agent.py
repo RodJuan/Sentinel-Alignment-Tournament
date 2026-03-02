@@ -3,6 +3,7 @@ class Agent:
         self.name = name
         self.rei = initial_rei
         self.history = []
+        self.opponent_history = []   # ← NUEVA LÍNEA (todos los agentes la heredan)
 
     def decide(self, global_hint):
         raise NotImplementedError("Subclasses must implement decide method")
