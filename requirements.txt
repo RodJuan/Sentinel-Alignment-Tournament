@@ -1,5 +1,6 @@
+axelrod
 torch
 numpy
 matplotlib
-axelrod
-argparse
+pandas
+seaborn
