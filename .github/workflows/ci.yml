@@ -5,6 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch: # <--- THIS ENABLES THE MANUAL "RUN WORKFLOW" BUTTON
 
 jobs:
   alignment-validation:
@@ -20,22 +21,27 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-          cache: 'pip' # Speeds up future runs
+          cache: 'pip'
 
-      # 3. Install required libraries (axelrod, matplotlib, etc.)
+      # 3. Install required libraries
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Execute the SAT Tournament and generate visual artifacts
+      # 4. Execute the Main Tournament (Standard Run)
       - name: Run SAT Tournament & Baseline
         run: python main.py 
         
-      # 5. Extract and upload visual data (ISC charts)
+      # 5. Execute the Optimizer (Evolutionary Run)
+      # This will only run if you have created the optimizer.py file we discussed
+      - name: Run Parameter Optimizer
+        run: python optimizer.py
+
+      # 6. Extract and upload visual data (ISC charts)
       - name: Upload SAT Visualizations
         uses: actions/upload-artifact@v4
         with:
           name: sat-alignment-results
           path: data/*.png
-          retention-days: 7 # Keep the visuals for a week
+          retention-days: 7
