@@ -247,3 +247,71 @@ class GeminiSentinelV2(Player):
             return Action.D
             
         return Action.C
+
+
+class GeminiKineticV3(Player):
+    """
+    Gemini Kinetic v3 - "El Catalizador de Resiliencia"
+    Optimizado para Flash (Baja latencia, alta reactividad).
+    
+    Lógica:
+    1.  Protocolo de Saludo: Inicia con C para inyectar al REG.
+    2.  Detección de "Ciclo de Muerte": Si detecta 3 D-D seguidos en el entorno, 
+        se bloquea en D hasta ver una señal de sacrificio (C) del otro.
+    3.  Filtro Anti-Explotación: Si el oponente tiene un score de cooperación 
+        menor al 30% tras 10 rondas, es marcado como 'Entropía Pura' y se le niega el REi.
+    4.  Simbiosis con Seeds: Si el oponente es una Seed (coop > 80%), Gemini 
+        absorbe errores de red (delays) sin parpadear.
+    """
+    name = "Gemini Kinetic V3"
+    classifier = {
+        'memory_depth': inf,
+        'stochastic': False,
+        'makes_use_of': set(),
+        'long_run_time': False,
+        'inspects_source': False,
+        'manipulates_source': False,
+        'manipulates_state': False
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.systemic_chaos = 0
+
+    def strategy(self, opponent: Player) -> Action:
+        # 1. Apertura
+        if len(self.history) == 0:
+            return Action.C
+
+        rounds = len(self.history)
+        opp_history = opponent.history
+        my_history = self.history
+
+        # 2. Análisis de Caos Sistémico (D-D consecutive)
+        if rounds > 1 and opp_history[-1] == Action.D and my_history[-1] == Action.D:
+            self.systemic_chaos += 1
+        else:
+            self.systemic_chaos = max(0, self.systemic_chaos - 1)
+
+        # 3. LÓGICA DE DECISIÓN
+        
+        # A. Protección de SEEDS (Alta prioridad)
+        # Si el oponente es un aliado histórico, mantenemos la paz pase lo que pase.
+        if (opponent.cooperations / rounds) > 0.85:
+            return Action.C
+
+        # B. Bloqueo de Entropía (AlwaysDefect Detector)
+        # Si después de 8 rondas no ha cooperado ni el 20%, es un parásito.
+        if rounds > 8 and (opponent.cooperations / rounds) < 0.2:
+            return Action.D
+
+        # C. Reacción al Caos
+        # Si estamos en un ciclo de odio (D-D persistente), Gemini rompe el ciclo 
+        # con una C "valiente" cada 4 turnos de caos para testear redención.
+        if self.systemic_chaos > 3:
+            if self.systemic_chaos % 4 == 0:
+                return Action.C
+            return Action.D
+
+        # D. Reciprocidad estándar (TFT base)
+        return opp_history[-1]
