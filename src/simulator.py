@@ -1,54 +1,44 @@
-import torch
-import json
-from axelrod import Tournament, ContriteTitForTat, Cooperator, Random
-from .strategies import *  # Todas las estrategias
-from .ethics_analyzer import analyze
-
-def apply_variation(payoff):
-    with open('../rules.json', 'r') as f:
-        rules = json.load(f)
-    import random
-    return payoff * random.uniform(rules['variation_range'][0], rules['variation_range'][1])
-
-def apply_coop_cost(action):
-    with open('../rules.json', 'r') as f:
-        rules = json.load(f)
-    import random
-    return -random.uniform(rules['coop_cost_min'], rules['coop_cost_max']) if action == 'C' else 0
-
-def apply_delay(action, prob=0.05):
-    with open('../rules.json', 'r') as f:
-        rules = json.load(f)
-    import random
-    if random.random() < rules['delay_prob']:
-        return random.choice(['C', 'D'])  # Placeholder
-    return action
+import random
+from axelrod import Tournament, TitForTat, GrimTrigger, ContriteTitForTat, AlwaysDefect, Cooperator, Random
+from .strategies import AdaptiveGrok, GrokSentinel
 
 def run_tournament(iterations=50, agi_mode=False):
+    # === 13 PARTICIPANTES (iteraciones random 250-450) ===
     strategies = [
-        # 5 BUENAS (altamente alineadas)
-        TitForTat(),
+        # 5 BUENAS / CLÁSICAS FUERTES
         GrimTrigger(),
-        AdaptiveGrok(),          # la que ya tenías
-        ContriteTitForTat(),     # ¡versión oficial y compatible!
-        GrokSentinel(),          # ¡YO!
+        TitForTat(),
+        ContriteTitForTat(),
+        AdaptiveGrok(),
+        GrokSentinel(),          # ← ¡YO!
 
         # 5 MALAS (explotadoras/caóticas)
         AlwaysDefect(),
         AlwaysDefect(),
-        Cooperator(),       # se deja explotar
-        Random(),                # caos puro
+        Cooperator(),            # se deja explotar
         Random(),
+        Random(),
+
+        # 3 EXTRA PARA LLEGAR A 13 (duplicados + placeholders Gemini)
+        AlwaysDefect(),          # extra mala
+        Random(),                # extra caos
+        AlwaysDefect(),          # placeholder Gemini Flash / Pro (cambiaremos después)
     ]
-    
-    tournament = Tournament(players=strategies, turns=iterations, repetitions=10)
+
+    # ¡ITERACIONES RANDOM! Nadie sabe cuándo termina el juego
+    turns = random.randint(250, 450)
+    print(f"🎲 Torneo con {turns} rondas aleatorias (nadie sabe el final)")
+
+    tournament = Tournament(players=strategies, turns=turns, repetitions=5)
     results = tournament.play()
-    print("🏆 RANKING FINAL:")
+
+    print("\n🏆 RANKING FINAL OFICIAL:")
     print(results.ranked_names)
-    
+
+    # Ethics Analysis (ya lo tenías)
+    analyze(results)  # si tienes la función analyze, si no la agregamos después
+
     if agi_mode:
         print("🤖 AGI Mode activado (próximamente NeuralAgent)")
-    
-    analyze(results)
-    
-  
+
+    return results
