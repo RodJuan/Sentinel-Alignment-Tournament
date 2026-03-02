@@ -11,7 +11,8 @@ from .strategies import (
     Cooperator,
     AdaptiveGrokV2,    # <-- Grok's enhanced alignment version
     GeminiSentinelV2,  # <-- Deep Thinking/Sentinel version
-    GeminiKineticV3    # <-- High-reactivity kinetic version
+    GeminiKineticV3,    # <-- High-reactivity kinetic version
+    Gemini_GeoscapeWarden_v3.1p(), # <-- Gemini Pro 3.1 Version
 )
 
 def run_tournament(iterations=50, agi_mode=False):
