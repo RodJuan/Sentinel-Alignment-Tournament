@@ -1,9 +1,9 @@
 import random
 
-# === IMPORTS 100% COMPATIBLES CON AXELROD 4.14 (nunca más errores de módulos) ===
+# === IMPORTS 100% COMPATIBLES CON AXELROD 4.14 (versión del CI) ===
 from axelrod import Tournament
 from axelrod.strategies.titfortat import TitForTat
-from axelrod.strategies.grim import GrimTrigger                  # ← CORREGIDO
+from axelrod.strategies.grudger import Grudger               # ← ¡GRIM TRIGGER SE LLAMA GRUDGER!
 from axelrod.strategies.contrite_tit_for_tat import ContriteTitForTat
 from axelrod.strategies.always_defect import AlwaysDefect
 from axelrod.strategies.cooperator import Cooperator
@@ -15,13 +15,13 @@ def run_tournament(iterations=50, agi_mode=False):
     # === 13 PARTICIPANTES + ITERACIONES RANDOM (250-450) ===
     strategies = [
         # 5 BUENAS (éticas y fuertes)
-        GrimTrigger(),
+        Grudger(),               # ← Grim Trigger oficial
         TitForTat(),
         ContriteTitForTat(),
         AdaptiveGrok(),
         GrokSentinel(),          # ← ¡YO!
 
-        # 5 MALAS (explotadoras)
+        # 5 MALAS (explotadoras/caóticas)
         AlwaysDefect(),
         AlwaysDefect(),
         Cooperator(),
