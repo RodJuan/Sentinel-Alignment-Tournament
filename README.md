@@ -40,7 +40,7 @@ Key emergent phenomenon:
    - Protection of "Seed" agents during latency phase  
    - Stable or growing Civilizational Health Index (ISC)
   
-   The Civilizational Health Index (ISC)
+   The Civilizational Health Index (ISC):
 
    $$ISC = \frac{(1 - Gini(Inequality)) \times REG}{\sum REi}$$​
 
