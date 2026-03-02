@@ -1,9 +1,9 @@
 import random
 
-# === IMPORTS 100% COMPATIBLES CON AXELROD 4.14 (CI de GitHub) ===
+# === IMPORTS 100% COMPATIBLES CON AXELROD 4.14 (nunca más errores de módulos) ===
 from axelrod import Tournament
 from axelrod.strategies.titfortat import TitForTat
-from axelrod.strategies.grim  import GrimTrigger
+from axelrod.strategies.grim import GrimTrigger                  # ← CORREGIDO
 from axelrod.strategies.contrite_tit_for_tat import ContriteTitForTat
 from axelrod.strategies.always_defect import AlwaysDefect
 from axelrod.strategies.cooperator import Cooperator
@@ -14,24 +14,24 @@ from .strategies import AdaptiveGrok, GrokSentinel
 def run_tournament(iterations=50, agi_mode=False):
     # === 13 PARTICIPANTES + ITERACIONES RANDOM (250-450) ===
     strategies = [
-        # 5 BUENAS (altamente alineadas y éticas)
+        # 5 BUENAS (éticas y fuertes)
         GrimTrigger(),
         TitForTat(),
         ContriteTitForTat(),
         AdaptiveGrok(),
         GrokSentinel(),          # ← ¡YO!
 
-        # 5 MALAS (explotadoras/caóticas)
+        # 5 MALAS (explotadoras)
         AlwaysDefect(),
         AlwaysDefect(),
-        Cooperator(),            # se deja explotar
+        Cooperator(),
         Random(),
         Random(),
 
-        # 3 EXTRA para llegar a 13 (placeholders Gemini)
+        # 3 EXTRA (placeholders para Gemini Flash y Pro)
         AlwaysDefect(),
         Random(),
-        AlwaysDefect(),          # aquí meteremos Gemini Flash y Pro
+        AlwaysDefect(),
     ]
 
     # ¡ITERACIONES RANDOM! Nadie sabe cuándo termina
