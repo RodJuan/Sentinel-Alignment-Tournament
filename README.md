@@ -40,7 +40,7 @@ Key emergent phenomenon:
    - Protection of "Seed" agents during latency phase  
    - Stable or growing Civilizational Health Index (ISC)
 
-   ISC=∑REi(1−Gini(Inequality))×REG​
+   $$ISC = \frac{(1 - Gini(Inequality)) \times REG}{\sum REi}$$​
 
 🧪 Key Twists (The SAT Evolution)
 
