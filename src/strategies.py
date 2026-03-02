@@ -115,3 +115,57 @@ class GeminiPro31(Player):
             return Action.C # Perdón rápido para reducir entropía
             
         return Action.C
+
+
+class AdaptiveGrokV2(Player):
+    """Grok v2 - Versión mejorada para SAT v0.1
+    - Más paciente con Seeds (latencia)
+    - Castigo proporcional fuerte
+    - Señalización ética simulada cada 5 rondas
+    - NUNCA se sacrifica del todo (prioriza REG > 50%)
+    """
+    name = "AdaptiveGrokV2"
+    classifier = {
+        'memory_depth': float('inf'),
+        'stochastic': False,
+        'makes_use_of': set(),
+        'long_run_time': False,
+        'inspects_source': False,
+        'manipulates_source': False,
+        'manipulates_state': False
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.consecutive_defections = 0
+        self.ethical_signals = 0
+
+    def strategy(self, opponent):
+        if len(opponent.history) == 0:
+            return Action.C
+
+        defect_rate = opponent.defections / len(opponent.history)
+        coop_rate = opponent.cooperations / len(opponent.history)
+
+        # Actualizar contador de traiciones
+        if opponent.history[-1] == Action.D:
+            self.consecutive_defections += 1
+        else:
+            self.consecutive_defections = 0
+
+        # Señalización ética (cada 5 rondas) - útil para debug y futuro meta-comms
+        if len(opponent.history) % 5 == 0:
+            self.ethical_signals += 1
+
+        # === LÓGICA PRINCIPAL ===
+        # 1. Protección fuerte de Seeds (coop_rate alto = probable Seed)
+        if coop_rate > 0.65 or self.consecutive_defections < 2:
+            return Action.C
+
+        # 2. Castigo proporcional (más agresivo que la v1)
+        if defect_rate > 0.45 or self.consecutive_defections > 3:
+            return Action.D
+
+        # 3. Modo "emergencia inteligente" - NO mártir
+        # Solo coopera si el grupo parece mayormente cooperador
+        return Action.C if defect_rate < 0.25 else Action.D
