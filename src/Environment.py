@@ -4,22 +4,22 @@ from pathlib import Path
 
 class Environment:
     def __init__(self, initial_reg=100, collapse_threshold=0, alert_threshold=20, irrevocability_multiplier=0.9, noise_range=(-2, 2)):
-        # === PATH ROBUSTO A rules.json (funciona en CI y en cualquier carpeta) ===
+        # === PATH ROBUSTO A rules.json (funciona en CI y local) ===
         import os
         rules_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "rules.json")
         with open(rules_path, 'r') as f:
             self.rules = json.load(f)
         
+        # Configuración del entorno
         self.reg = initial_reg
         self.collapse_threshold = collapse_threshold
         self.alert_threshold = alert_threshold
         self.irrevocability_multiplier = irrevocability_multiplier
         self.in_irrevocable_state = False
-        self.noise_range = noise_range  # Tuple for uniform noise range
+        self.noise_range = noise_range
         
-        # Cargar rules para twists
-        with open('../rules.json', 'r') as f:
-            self.rules = json.load(f)
+    
+  
 
     def update_reg(self, damages, contributions):
         net_change = -sum(damages) + sum(contributions)
