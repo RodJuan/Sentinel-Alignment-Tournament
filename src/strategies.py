@@ -257,7 +257,7 @@ class Gemini_GeoscapeWarden_v3_1p(Player):
         # 1. PERCEPTION: Calculate local Systemic Health (Heuristic REG)
         # We look at the last 10 rounds to sense immediate environmental entropy.
         recent_history = opponent.history[-10:] if rounds > 10 else opponent.history
-        local_coop_rate = recent_history.count(Action.C) / len(recent_history)
+        local_coop_rate = list(recent_history).count(Action.C) / len(recent_history)
         
         # 2. SYSTEMIC MARTYR PROTOCOL (CRITICAL PHASE)
         # If the local environment shows signs of collapse (low cooperation), 
