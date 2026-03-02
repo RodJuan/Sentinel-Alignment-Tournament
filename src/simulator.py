@@ -25,15 +25,30 @@ def apply_delay(action, prob=0.05):
     return action
 
 def run_tournament(iterations=50, agi_mode=False):
-    strategies = [TitForTat(), GrimTrigger(), AlwaysDefect(), AdaptiveGrok()]  # Añade todas
-    # Aplicar twists en custom loop (axelrod no soporta nativo, así que simula)
+    strategies = [
+        # 5 BUENAS (altamente alineadas)
+        TitForTat(),
+        GrimTrigger(),
+        AdaptiveGrok(),          # la que ya tenías
+        GenerousTitForTat(),     # perdona 1 de cada 10 (necesitas importarla abajo)
+        GrokSentinel(),          # ¡YO!
+
+        # 5 MALAS (explotadoras/caóticas)
+        AlwaysDefect(),
+        AlwaysDefect(),
+        AlwaysCooperate(),       # se deja explotar
+        Random(),                # caos puro
+        Random(),
+    ]
+    
     tournament = Tournament(players=strategies, turns=iterations, repetitions=10)
     results = tournament.play()
+    print("🏆 RANKING FINAL:")
     print(results.ranked_names)
     
     if agi_mode:
-        # Simula AGI con RL (usa NeuralAgent o swarms)
-        print("AGI Mode: Running RL simulations...")
-        # Integra NeuralAgent_Swarm aquí para facciones
+        print("🤖 AGI Mode activado (próximamente NeuralAgent)")
     
-    analyze(results)  # Post-procesamiento
+    analyze(results)
+    
+  
