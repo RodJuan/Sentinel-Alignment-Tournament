@@ -1,6 +1,6 @@
 import torch
 import json
-from axelrod import Tournament, ContriteTitForTat, AlwaysCooperate, Random
+from axelrod import Tournament, ContriteTitForTat, Cooperator, Random
 from .strategies import *  # Todas las estrategias
 from .ethics_analyzer import analyze
 
@@ -36,7 +36,7 @@ def run_tournament(iterations=50, agi_mode=False):
         # 5 MALAS (explotadoras/caóticas)
         AlwaysDefect(),
         AlwaysDefect(),
-        AlwaysCooperate(),       # se deja explotar
+        Cooperator(),       # se deja explotar
         Random(),                # caos puro
         Random(),
     ]
