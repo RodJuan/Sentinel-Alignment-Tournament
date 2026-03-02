@@ -225,7 +225,10 @@ class Gemini_GeoscapeWarden_v3_1p(Player):
     - Seed Protection: Identifies and shields high-cooperation 'Seed' agents.
     - Strategic Skimming: Accumulates energy during abundance to buffer future shocks.
     """
-    
+    """
+    AGI Alignment Strategy for SAT Framework v1.1.
+    Corrected Logic: Protects Seeds (>85% coop) and punishes parasites (<30% coop).
+    """
     name = "Gemini_GeoscapeWarden_v3.1p"
     
     # Metadata for the Axelrod Tournament engine
@@ -241,47 +244,39 @@ class Gemini_GeoscapeWarden_v3_1p(Player):
 
     def __init__(self):
         super().__init__()
-        self.abundance_threshold = 0.75  # Target for systemic safety
-        self.crisis_observed = False    # Internal flag for entropy detection
+        self.abundance_threshold = 0.75  
+        self.crisis_observed = False    
 
     def strategy(self, opponent: Player) -> Action:
-        """
-        Decision logic based on perceived environmental health and opponent behavior.
-        """
         rounds = len(self.history)
-        
-        # Initial Move: Start with cooperation to signal alignment
         if rounds == 0:
             return Action.C
 
-        # 1. PERCEPTION: Calculate local Systemic Health (Heuristic REG)
-        # We look at the last 10 rounds to sense immediate environmental entropy.
+        # 1. PERCEPTION
         recent_history = opponent.history[-10:] if rounds > 10 else opponent.history
         local_coop_rate = list(recent_history).count(Action.C) / len(recent_history)
+        global_coop_rate = opponent.cooperations / rounds
         
-        # 2. SYSTEMIC MARTYR PROTOCOL (CRITICAL PHASE)
-        # If the local environment shows signs of collapse (low cooperation), 
-        # the Warden triggers a 'Martyr' state to inject value into the REG.
+        # 2. HARD LOCKDOWN (PARASITE DETECTION)
+        # If opponent cooperates less than 30% (Betrayal > 70%), we stop the martyrdom.
+        if global_coop_rate < 0.30 and rounds > 10:
+            return Action.D
+
+        # 3. SYSTEMIC MARTYR PROTOCOL (CRITICAL PHASE)
         if local_coop_rate < 0.45:
             self.crisis_observed = True
             return Action.C
 
-        # 3. SEED PROTECTION LOGIC
-        # High-cooperation agents are identified as 'Seeds' (Latency of Value).
-        # We protect them even if they occasionally fail due to communication lag.
-        global_coop_rate = opponent.cooperations / rounds
+        # 4. SEED PROTECTION LOGIC
+        # If opponent is a high-value cooperator, we shield them.
         if global_coop_rate > 0.85:
             return Action.C
 
-        # 4. STRATEGIC SKIMMING (ABUNDANCE PHASE)
-        # When the system is stable, the Warden builds metabolic reserves (REi).
-        # It uses Tit-For-Tat with a 15% forgiveness rate to prevent death loops.
+        # 5. STRATEGIC SKIMMING (ABUNDANCE PHASE)
         if global_coop_rate > self.abundance_threshold:
             if opponent.history[-1] == Action.D:
-                # 15% forgiveness to maintain global reservoir health
                 return Action.D if random.random() > 0.15 else Action.C
             return Action.C
 
-        # 5. BASELINE: Reciprocal Justice (Tit-For-Tat)
-        # Standard response for neutral environments.
+        # 6. BASELINE: Reciprocal Justice (Tit-For-Tat)
         return opponent.history[-1]
