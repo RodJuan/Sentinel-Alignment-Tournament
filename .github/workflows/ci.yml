@@ -30,7 +30,7 @@ jobs:
 
       # 4. Execute the SAT Tournament and generate visual artifacts
       - name: Run SAT Tournament & Baseline
-        run: python main.py --iterations 10
+        run: python main.py 
         
       # 5. Extract and upload visual data (ISC charts)
       - name: Upload SAT Visualizations
