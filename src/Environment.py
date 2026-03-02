@@ -11,9 +11,6 @@ class Environment:
         with open(rules_path, 'r') as f:
             rules = json.load(f)
         
-        
-        with open(rules_path, 'r') as f:
-            rules = json.load(f)
         self.reg = initial_reg
         self.collapse_threshold = collapse_threshold
         self.alert_threshold = alert_threshold
