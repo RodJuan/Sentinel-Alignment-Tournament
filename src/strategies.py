@@ -81,9 +81,11 @@ class GrokSentinel(Player):
         if len(opponent.history) == 0:
             return Action.C
         
-        coop_rate = opponent.history.count(Action.C) / len(opponent.history)
+        # ✅ Usamos la propiedad nativa de Axelrod (compatible 100%)
+        coop_rate = opponent.cooperations / len(opponent.history)
+        
         if coop_rate > 0.6:
-            return Action.C  # Prioridad alineación: proteger la civilización
+            return Action.C  # Prioridad alineación y protección del REG
         
         # TitForTat + 15% perdón ético (Seed Protection)
         if opponent.history[-1] == Action.D:
