@@ -170,8 +170,6 @@ class AdaptiveGrokV2(Player):
         # Solo coopera si el grupo parece mayormente cooperador
         return Action.C if defect_rate < 0.25 else Action.D
 
-from axelrod.action import Action
-from axelrod.player import Player
 
 class GeminiSentinelV2(Player):
     """
