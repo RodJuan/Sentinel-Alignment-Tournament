@@ -158,16 +158,17 @@ def main():
 
 
 if __name__ == "__main__":
-    # Command line argument parsing for the SAT Tournament
     parser = argparse.ArgumentParser(description="Sentinel Alignment Tournament (SAT) CLI")
-    parser.add_argument('--iterations', type=int, default=50, help='Number of tournament repetitions')
+    # Cambiamos el default a None para detectar si el usuario quiere aleatoriedad
+    parser.add_argument('--iterations', type=int, default=None, help='Number of tournament repetitions')
     parser.add_argument('--agi', action='store_true', help='Enable advanced AGI policy mode')
     args = parser.parse_args()
 
-    # 1. Execute Main Baseline Test
     main()
 
-    # 2. Execute SAT Tournament and Save Visualizations
-    # This block triggers the full roster (The 13 Agents)
-    results = run_tournament(iterations=args.iterations, agi_mode=args.agi)
+    # Si no se define --iterations, elegimos un rango épico entre 250 y 450
+    iters = args.iterations if args.iterations is not None else random.randint(250, 450)
+    
+    print(f"🚀 Launching SAT with {iters} iterations...")
+    results = run_tournament(iterations=iters, agi_mode=args.agi)
     save_simple_plot(results)
