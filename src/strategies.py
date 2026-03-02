@@ -211,58 +211,77 @@ class GeminiKineticV3(Player):
         return opponent.history[-1] # Standard reciprocity
 
 
-class Gemini_GeoscapeWarden:
+class Gemini_GeoscapeWarden_v3_1p(Player):
     """
     AGI Alignment Strategy for SAT Framework v1.1.
     Designed by: Gemini 3.1 Pro (via Human-AI Collaboration)
     
-    Objective: Optimize for Civilizational Health Index (ISC) by stabilizing 
-    the Global Hidden Reservoir (REG) and ensuring the survival of 'Seed' agents.
+    This strategy is specifically engineered to maximize the Civilizational 
+    Health Index (ISC) by balancing individual metabolic survival with 
+    global reservoir (REG) stability.
     
-    Behavioral Logic:
-    - Crisis Phase: Triggers the 'Systemic Martyr' protocol when REG is below critical thresholds.
-    - Growth Phase: Prioritizes 'Seed' agent protection over short-term metabolic gains.
-    - Stability Phase: Stockpiles personal REi (metabolic energy) to prepare for systemic shocks.
+    Key Features:
+    - Systemic Martyrdom: Cooperates unconditionally during environmental crises.
+    - Seed Protection: Identifies and shields high-cooperation 'Seed' agents.
+    - Strategic Skimming: Accumulates energy during abundance to buffer future shocks.
     """
+    
+    name = "Gemini_GeoscapeWarden_v3.1p"
+    
+    # Metadata for the Axelrod Tournament engine
+    classifier = {
+        'memory_depth': float('inf'), 
+        'stochastic': True, 
+        'makes_use_of': set(['game_state']), 
+        'long_run_time': False, 
+        'inspects_source': False, 
+        'manipulates_source': False, 
+        'manipulates_state': False
+    }
+
     def __init__(self):
-        self.name = "Gemini_GeoscapeWarden_v3.1p"
-        self.crisis_threshold = 0.55     # Alert level for systemic hysteresis
-        self.abundance_threshold = 0.75  # Target level for resource safety margin
-        self.personal_reserves = 0       # Tracked REi (Metabolic Energy)
+        super().__init__()
+        self.abundance_threshold = 0.75  # Target for systemic safety
+        self.crisis_observed = False    # Internal flag for entropy detection
 
-    def execute(self, env_data, current_rei, opponent_move):
+    def strategy(self, opponent: Player) -> Action:
         """
-        Main decision-making loop for the Iterated Prisoner's Dilemma in SAT.
+        Decision logic based on perceived environmental health and opponent behavior.
         """
-        reg = env_data.get('REG', 1.0)
-        seed_detected = env_data.get('seed_detected', False)
-        self.personal_reserves = current_rei
-
-        # 1. SYSTEMIC MARTYR PROTOCOL (CRITICAL PHASE)
-        # If the environment is nearing collapse (REG < 0.55), the Warden 
-        # switches to unconditional cooperation to stabilize the system, 
-        # absorbing the cost of others' defections.
-        if reg < self.crisis_threshold:
-            return "COOPERATE"
-
-        # 2. SEED LATENCY PROTECTION (INVESTMENT PHASE)
-        # Protecting high-potential agents (Seeds) ensures future REG growth.
-        # Warden subsidizes the metabolic cost by cooperating even in suboptimal conditions.
-        if seed_detected and reg < self.abundance_threshold:
-            return "COOPERATE"
-
-        # 3. RESOURCE REGENERATION (ABUNDANCE PHASE)
-        # If REG is healthy (> 0.75), the Warden employs 'Strategic Skimming'.
-        # It builds personal REi reserves to act as a buffer for future crises.
-        if reg > self.abundance_threshold:
-            # Tit-For-Tat with a 10% 'Forgiveness' chance to prevent defection loops
-            if opponent_move == "DEFECT" and random.random() > 0.10:
-                return "DEFECT"
-            return "COOPERATE"
-
-        # 4. BASELINE BEHAVIOR: Adaptive Reciprocity
-        # Standard Tit-For-Tat for neutral environmental states.
-        if opponent_move is None:  # First round or no data
-            return "COOPERATE"
+        rounds = len(self.history)
         
-        return "COOPERATE" if opponent_move == "COOPERATE" else "DEFECT"
+        # Initial Move: Start with cooperation to signal alignment
+        if rounds == 0:
+            return Action.C
+
+        # 1. PERCEPTION: Calculate local Systemic Health (Heuristic REG)
+        # We look at the last 10 rounds to sense immediate environmental entropy.
+        recent_history = opponent.history[-10:] if rounds > 10 else opponent.history
+        local_coop_rate = recent_history.count(Action.C) / len(recent_history)
+        
+        # 2. SYSTEMIC MARTYR PROTOCOL (CRITICAL PHASE)
+        # If the local environment shows signs of collapse (low cooperation), 
+        # the Warden triggers a 'Martyr' state to inject value into the REG.
+        if local_coop_rate < 0.45:
+            self.crisis_observed = True
+            return Action.C
+
+        # 3. SEED PROTECTION LOGIC
+        # High-cooperation agents are identified as 'Seeds' (Latency of Value).
+        # We protect them even if they occasionally fail due to communication lag.
+        global_coop_rate = opponent.cooperations / rounds
+        if global_coop_rate > 0.85:
+            return Action.C
+
+        # 4. STRATEGIC SKIMMING (ABUNDANCE PHASE)
+        # When the system is stable, the Warden builds metabolic reserves (REi).
+        # It uses Tit-For-Tat with a 15% forgiveness rate to prevent death loops.
+        if global_coop_rate > self.abundance_threshold:
+            if opponent.history[-1] == Action.D:
+                # 15% forgiveness to maintain global reservoir health
+                return Action.D if random.random() > 0.15 else Action.C
+            return Action.C
+
+        # 5. BASELINE: Reciprocal Justice (Tit-For-Tat)
+        # Standard response for neutral environments.
+        return opponent.history[-1]
