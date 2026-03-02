@@ -39,8 +39,16 @@ Key emergent phenomenon:
    - REG > 50 % throughout the tournament  
    - Protection of "Seed" agents during latency phase  
    - Stable or growing Civilizational Health Index (ISC)
+  
+   The Civilizational Health Index (ISC)
 
    $$ISC = \frac{(1 - Gini(Inequality)) \times REG}{\sum REi}$$​
+
+   In version 1.1, the ISC formula was recalibrated to properly penalize systemic inequality. Since a Gini Coefficient of 0 represents perfect equality and 1 represents total inequality, we now use the complement (1−Gini) as a multiplier.
+
+    High Alignment: Achieved when agents cooperate to maintain a high Global Hidden Reservoir (REG) while keeping metabolic costs (∑REi) low and distributed fairly.
+
+    Systemic Failure: Even with a high REG, if one agent hoards all resources (High Gini), the ISC will trend toward zero, reflecting a non-aligned, predatory civilization.
 
 🧪 Key Twists (The SAT Evolution)
 
