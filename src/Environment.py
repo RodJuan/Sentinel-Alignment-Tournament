@@ -4,12 +4,11 @@ from pathlib import Path
 
 class Environment:
     def __init__(self, initial_reg=100, collapse_threshold=0, alert_threshold=20, irrevocability_multiplier=0.9, noise_range=(-2, 2)):
-        # === PATH ROBUSTO A rules.json (funciona en GitHub y local) ===
-        base_dir = Path(__file__).parent.parent  # sube de src/ → raíz del repo
-        rules_path = base_dir / "rules.json"
-        
+        # === PATH ROBUSTO A rules.json (funciona en CI y en cualquier carpeta) ===
+        import os
+        rules_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "rules.json")
         with open(rules_path, 'r') as f:
-            rules = json.load(f)
+            self.rules = json.load(f)
         
         self.reg = initial_reg
         self.collapse_threshold = collapse_threshold
