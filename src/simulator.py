@@ -1,16 +1,22 @@
 import random
-from axelrod import Tournament
+import axelrod as axl
 
-# Importaciones específicas para evitar el ImportError en el CI
-from axelrod.strategies.titfortat import TitForTat
-from axelrod.strategies.grudger import Grudger
-from axelrod.strategies.contrite_tit_for_tat import ContriteTitForTat
-from axelrod.strategies.always_defect import AlwaysDefect
-from axelrod.strategies.cooperator import Cooperator
-from axelrod.strategies.random import Random as AxelrodRandom
+# Importamos las clases directamente desde el namespace global de estrategias de axl
+# Esto es mucho más robusto para el CI de GitHub
+from axelrod.strategies import (
+    TitForTat,
+    Grudger,
+    ContriteTitForTat,
+    AlwaysDefect,
+    Cooperator,
+    Random as AxelrodRandom
+)
 
 # Tus estrategias locales
-from .strategies import AdaptiveGrok, GrokSentinel
+try:
+    from .strategies import AdaptiveGrok, GrokSentinel
+except ImportError:
+    from strategies import AdaptiveGrok, GrokSentinel
 
 def run_tournament(iterations=50, agi_mode=False):
     # === 13 PARTICIPANTES + ITERACIONES RANDOM (250-450) ===
