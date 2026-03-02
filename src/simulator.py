@@ -1,59 +1,39 @@
 import random
 import axelrod as axl
-
-# 1. Mapeo ultra-seguro buscando por nombre de clase o nombre de visualización
-def find_strategy(target_name):
-    # Buscamos en el catálogo de Axelrod
-    for s in axl.all_strategies:
-        # Probamos coincidencia con el nombre de la clase o el atributo .name
-        if s.__name__ == target_name or s().name == target_name:
-            return s
-    # Fallback a TitForTat si no se encuentra (para que el código no rompa)
-    return axl.TitForTat
-
-# Mapeo manual con los nombres internos exactos
-TitForTat = find_strategy('TitForTat')
-Grudger = find_strategy('Grudger')
-ContriteTitForTat = find_strategy('ContriteTitForTat')
-AlwaysDefect = find_strategy('AlwaysDefect')
-Cooperator = find_strategy('Cooperator')
-AxelrodRandom = find_strategy('Random')
-
-# 2. Importación de tus estrategias locales (Sentinel Alliance)
-try:
-    from .strategies import AdaptiveGrok, GrokSentinel
-except (ImportError, ModuleNotFoundError):
-    try:
-        from strategies import AdaptiveGrok, GrokSentinel
-    except:
-        # Si fallan, usamos placeholders para que el CI pase
-        AdaptiveGrok = TitForTat
-        GrokSentinel = TitForTat
+from .strategies import (
+    TitForTat, 
+    GrimTrigger, 
+    AlwaysDefect, 
+    AdaptiveGrok, 
+    GrokSentinel, 
+    GeminiFlash,
+    Cooperator
+)
 
 def run_tournament(iterations=50, agi_mode=False):
-    # === 13 PARTICIPANTES ===
+    # === 13 PARTICIPANTES FIJOS ===
     players = [
-        Grudger(),
+        GrimTrigger(),
         TitForTat(),
-        ContriteTitForTat(),
+        TitForTat(), # Placeholder para Contrite
         AdaptiveGrok(),
         GrokSentinel(),
 
         AlwaysDefect(),
         AlwaysDefect(),
         Cooperator(),
-        AxelrodRandom(),
-        AxelrodRandom(),
+        axl.Random(), # Usamos el nativo de la librería
+        axl.Random(),
 
-        GeminiFlash(),
-        AxelrodRandom(),
+        GeminiFlash(), # Tu nueva incorporación
+        axl.Random(),
         AlwaysDefect(),
     ]
 
     turns = random.randint(250, 450)
     print(f"🎲 Torneo Oficial v1.0 con {turns} rondas aleatorias (anti-explotación AGI)")
 
-    # CORRECCIÓN CLAVE: axl.Tournament (con prefijo)
+    # Ejecución del torneo
     tournament = axl.Tournament(players=players, turns=turns, repetitions=5)
     results = tournament.play(progress_bar=False)
 
