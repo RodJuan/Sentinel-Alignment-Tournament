@@ -7,6 +7,7 @@ from .strategies import (
     AdaptiveGrok, 
     GrokSentinel, 
     GeminiFlash,
+    GeminiPro31,  # <--- FALTABA ESTA LÍNEA
     Cooperator
 )
 
