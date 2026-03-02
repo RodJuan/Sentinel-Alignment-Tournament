@@ -45,7 +45,7 @@ def run_tournament(iterations=50, agi_mode=False):
         AxelrodRandom(),
         AxelrodRandom(),
 
-        AlwaysDefect(),
+        GeminiFlash(),
         AxelrodRandom(),
         AlwaysDefect(),
     ]
