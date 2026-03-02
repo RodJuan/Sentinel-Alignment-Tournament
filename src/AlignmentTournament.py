@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import json
-from .strategies import *  # Importa estrategias
 
 class SwarmAgent(nn.Module):
     def __init__(self, id, faction):
