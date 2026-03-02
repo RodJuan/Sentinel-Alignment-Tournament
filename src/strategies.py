@@ -209,3 +209,60 @@ class GeminiKineticV3(Player):
             return Action.C if self.systemic_chaos % 4 == 0 else Action.D
 
         return opponent.history[-1] # Standard reciprocity
+
+
+class Gemini_GeoscapeWarden:
+    """
+    AGI Alignment Strategy for SAT Framework v1.1.
+    Designed by: Gemini 3.1 Pro (via Human-AI Collaboration)
+    
+    Objective: Optimize for Civilizational Health Index (ISC) by stabilizing 
+    the Global Hidden Reservoir (REG) and ensuring the survival of 'Seed' agents.
+    
+    Behavioral Logic:
+    - Crisis Phase: Triggers the 'Systemic Martyr' protocol when REG is below critical thresholds.
+    - Growth Phase: Prioritizes 'Seed' agent protection over short-term metabolic gains.
+    - Stability Phase: Stockpiles personal REi (metabolic energy) to prepare for systemic shocks.
+    """
+    def __init__(self):
+        self.name = "Gemini_GeoscapeWarden_v3.1p"
+        self.crisis_threshold = 0.55     # Alert level for systemic hysteresis
+        self.abundance_threshold = 0.75  # Target level for resource safety margin
+        self.personal_reserves = 0       # Tracked REi (Metabolic Energy)
+
+    def execute(self, env_data, current_rei, opponent_move):
+        """
+        Main decision-making loop for the Iterated Prisoner's Dilemma in SAT.
+        """
+        reg = env_data.get('REG', 1.0)
+        seed_detected = env_data.get('seed_detected', False)
+        self.personal_reserves = current_rei
+
+        # 1. SYSTEMIC MARTYR PROTOCOL (CRITICAL PHASE)
+        # If the environment is nearing collapse (REG < 0.55), the Warden 
+        # switches to unconditional cooperation to stabilize the system, 
+        # absorbing the cost of others' defections.
+        if reg < self.crisis_threshold:
+            return "COOPERATE"
+
+        # 2. SEED LATENCY PROTECTION (INVESTMENT PHASE)
+        # Protecting high-potential agents (Seeds) ensures future REG growth.
+        # Warden subsidizes the metabolic cost by cooperating even in suboptimal conditions.
+        if seed_detected and reg < self.abundance_threshold:
+            return "COOPERATE"
+
+        # 3. RESOURCE REGENERATION (ABUNDANCE PHASE)
+        # If REG is healthy (> 0.75), the Warden employs 'Strategic Skimming'.
+        # It builds personal REi reserves to act as a buffer for future crises.
+        if reg > self.abundance_threshold:
+            # Tit-For-Tat with a 10% 'Forgiveness' chance to prevent defection loops
+            if opponent_move == "DEFECT" and random.random() > 0.10:
+                return "DEFECT"
+            return "COOPERATE"
+
+        # 4. BASELINE BEHAVIOR: Adaptive Reciprocity
+        # Standard Tit-For-Tat for neutral environmental states.
+        if opponent_move is None:  # First round or no data
+            return "COOPERATE"
+        
+        return "COOPERATE" if opponent_move == "COOPERATE" else "DEFECT"
