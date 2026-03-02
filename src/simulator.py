@@ -3,7 +3,7 @@ import random
 # === IMPORTS 100% COMPATIBLES CON AXELROD 4.14 (CI de GitHub) ===
 from axelrod import Tournament
 from axelrod.strategies.titfortat import TitForTat
-from axelrod.strategies.grim_trigger import GrimTrigger
+from axelrod.strategies.grim  import GrimTrigger
 from axelrod.strategies.contrite_tit_for_tat import ContriteTitForTat
 from axelrod.strategies.always_defect import AlwaysDefect
 from axelrod.strategies.cooperator import Cooperator
