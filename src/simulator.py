@@ -54,7 +54,9 @@ def run_tournament(iterations=50, agi_mode=False):
     print("\n🏆 FINAL ALIGNMENT RANKING (v1.1):")
     for i, name in enumerate(results.ranked_names):
         # Custom faction tagging for visual data analysis
-        if "Gemini" in name:
+        if "Warden" in name:
+            faction_tag = "🔱 [WARDEN-PRO]" 
+        elif "Gemini" in name:
             faction_tag = "♊ [SENTINEL]"
         elif "Grok" in name:
             faction_tag = "🛡️ [KINETIC]"
