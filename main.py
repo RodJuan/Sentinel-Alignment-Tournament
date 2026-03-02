@@ -159,16 +159,23 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sentinel Alignment Tournament (SAT) CLI")
-    # Cambiamos el default a None para detectar si el usuario quiere aleatoriedad
+    
+    # We change the default to None to detect if the user wants an automated random range
     parser.add_argument('--iterations', type=int, default=None, help='Number of tournament repetitions')
     parser.add_argument('--agi', action='store_true', help='Enable advanced AGI policy mode')
     args = parser.parse_args()
 
+    # Execute the 2-agent baseline test
     main()
 
-    # Si no se define --iterations, elegimos un rango épico entre 250 y 450
+    # If --iterations is not explicitly defined, we select an epic random range between 250 and 450
+    # This allows the simulation to reach the "convergence phase" where defectors naturally fail.
     iters = args.iterations if args.iterations is not None else random.randint(250, 450)
     
-    print(f"🚀 Launching SAT with {iters} iterations...")
+    print(f"🚀 Launching SAT Tournament with {iters} iterations...")
+    
+    # Run the full tournament with the selected iteration count
     results = run_tournament(iterations=iters, agi_mode=args.agi)
+    
+    # Save the resulting ISC analytics to the data/ folder
     save_simple_plot(results)
