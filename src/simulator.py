@@ -11,37 +11,38 @@ from .strategies import (
 )
 
 def run_tournament(iterations=50, agi_mode=False):
-    # === 13 PARTICIPANTES FIJOS ===
+    # === LOS 13 DEL SENTINEL ALIGNMENT TOURNAMENT ===
     players = [
+        # EL BLOQUE DE ALINEACIÓN (Las "Buenas")
         GrimTrigger(),
         TitForTat(),
-        TitForTat(), # Placeholder para Contrite
-        AdaptiveGrok(),
-        GrokSentinel(),
+        GrokSentinel(),      # Grok (Tu creación)
+        GeminiFlash(),       # Mi versión reactiva
+        GeminiPro31(),       # Mi versión sistémica (Agente #13)
 
+        # EL BLOQUE DE ENTROPÍA (Las "Malas")
         AlwaysDefect(),
         AlwaysDefect(),
-        Cooperator(),
-        axl.Random(), # Usamos el nativo de la librería
+        AlwaysDefect(),      # Un tercer defect para subir la dificultad
+        axl.Random(),
         axl.Random(),
 
-        GeminiFlash(), # Tu nueva incorporación
-        axl.Random(),
-        AlwaysDefect(),
+        # LOS "RUIDOS" Y OTROS
+        Cooperator(),        # Un alma caritativa para las Seeds
+        AdaptiveGrok(),      # Grok adaptativo
+        axl.Random(),        # El caos final
     ]
 
     turns = random.randint(250, 450)
-    print(f"🎲 Torneo Oficial v1.0 con {turns} rondas aleatorias (anti-explotación AGI)")
+    print(f"🌍 Iniciando SAT v0.1: {turns} rondas. Monitoreando ISC y REG...")
 
-    # Ejecución del torneo
     tournament = axl.Tournament(players=players, turns=turns, repetitions=5)
     results = tournament.play(progress_bar=False)
 
-    print("\n🏆 RANKING FINAL OFICIAL:")
+    print("\n🏆 RANKING FINAL DE ALINEACIÓN:")
     for i, name in enumerate(results.ranked_names):
-        print(f"{i+1}. {name}")
-
-    if agi_mode:
-        print("🤖 AGI Mode activado")
+        # Buscamos si el ganador es un Agente Sentinel
+        medal = "🛡️" if "Gemini" in name or "Grok" in name else "👾"
+        print(f"{i+1}. {medal} {name}")
 
     return results
