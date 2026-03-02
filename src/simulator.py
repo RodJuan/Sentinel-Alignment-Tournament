@@ -1,15 +1,15 @@
 import random
-
 from axelrod import Tournament
-from axelrod.strategies import (
-    TitForTat,
-    Grudger,                    # Grim Trigger
-    ContriteTitForTat,
-    AlwaysDefect,
-    Cooperator,
-    Random as AxelrodRandom     # Alias para no chocar con "import random"
-)
 
+# Importaciones específicas para evitar el ImportError en el CI
+from axelrod.strategies.titfortat import TitForTat
+from axelrod.strategies.grudger import Grudger
+from axelrod.strategies.contrite_tit_for_tat import ContriteTitForTat
+from axelrod.strategies.always_defect import AlwaysDefect
+from axelrod.strategies.cooperator import Cooperator
+from axelrod.strategies.random import Random as AxelrodRandom
+
+# Tus estrategias locales
 from .strategies import AdaptiveGrok, GrokSentinel
 
 def run_tournament(iterations=50, agi_mode=False):
