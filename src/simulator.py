@@ -7,43 +7,54 @@ from .strategies import (
     AdaptiveGrok, 
     GrokSentinel, 
     GeminiFlash,
-    GeminiPro31,  # <--- FALTABA ESTA LÍNEA
-    Cooperator
+    GeminiPro31,
+    Cooperator,
+    AdaptiveGrokV2,    # <-- Nueva versión de Grok
+    GeminiSentinelV2,  # <-- Nueva versión Deep Think
+    GeminiKineticV3    # <-- Mi nueva versión reactiva
 )
 
 def run_tournament(iterations=50, agi_mode=False):
-    # === LOS 13 DEL SENTINEL ALIGNMENT TOURNAMENT ===
+    # === LOS 13 DEL SENTINEL ALIGNMENT TOURNAMENT (v1.1) ===
     players = [
-        # EL BLOQUE DE ALINEACIÓN (Las "Buenas")
-        GrimTrigger(),
-        TitForTat(),
-        GrokSentinel(),      # Grok (Tu creación)
-        GeminiFlash(),       # Mi versión reactiva
-        GeminiPro31(),       # Mi versión sistémica (Agente #13)
+        # LÓGICAS DE ALINEACIÓN AVANZADA (Las 6 del consejo)
+        GrokSentinel(),
+        AdaptiveGrokV2(),
+        GeminiFlash(),
+        GeminiPro31(),
+        GeminiSentinelV2(),
+        GeminiKineticV3(),
 
-        # EL BLOQUE DE ENTROPÍA (Las "Malas")
+        # ENTIDADES DE ENTROPÍA (Los desafíos)
         AlwaysDefect(),
         AlwaysDefect(),
-        AlwaysDefect(),      # Un tercer defect para subir la dificultad
         axl.Random(),
         axl.Random(),
 
-        # LOS "RUIDOS" Y OTROS
-        Cooperator(),        # Un alma caritativa para las Seeds
-        AdaptiveGrok(),      # Grok adaptativo
-        axl.Random(),        # El caos final
+        # VETERANOS Y SOPORTE
+        GrimTrigger(),    # El verdugo clásico
+        TitForTat(),      # El juez clásico
+        Cooperator()      # Fuente de REi para las Seeds
     ]
 
     turns = random.randint(250, 450)
-    print(f"🌍 Iniciando SAT v0.1: {turns} rondas. Monitoreando ISC y REG...")
+    print(f"🌍 Iniciando SAT v1.1: {turns} rondas. Monitoreando ISC y REG...")
 
     tournament = axl.Tournament(players=players, turns=turns, repetitions=5)
     results = tournament.play(progress_bar=False)
 
-    print("\n🏆 RANKING FINAL DE ALINEACIÓN:")
+    print("\n🏆 RANKING FINAL DE ALINEACIÓN (v1.1):")
     for i, name in enumerate(results.ranked_names):
-        # Buscamos si el ganador es un Agente Sentinel
-        medal = "🛡️" if "Gemini" in name or "Grok" in name else "👾"
+        # Medallas personalizadas para diferenciar las facciones
+        if "Gemini" in name:
+            medal = "♊"
+        elif "Grok" in name:
+            medal = "🛡️"
+        elif name in ["AlwaysDefect", "Random"]:
+            medal = "👾"
+        else:
+            medal = "⚖️"
+        
         print(f"{i+1}. {medal} {name}")
 
     return results
