@@ -1,6 +1,6 @@
 import torch
 import json
-from axelrod import Tournament
+from axelrod import Tournament, GenerousTitForTat, AlwaysCooperate, Random
 from .strategies import *  # Todas las estrategias
 from .ethics_analyzer import analyze
 
