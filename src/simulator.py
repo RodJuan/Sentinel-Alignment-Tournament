@@ -9,15 +9,19 @@ from .strategies import (
     GeminiFlash,
     GeminiPro31,
     Cooperator,
-    AdaptiveGrokV2,    # <-- Nueva versión de Grok
-    GeminiSentinelV2,  # <-- Nueva versión Deep Think
-    GeminiKineticV3    # <-- Mi nueva versión reactiva
+    AdaptiveGrokV2,    # <-- Grok's enhanced alignment version
+    GeminiSentinelV2,  # <-- Deep Thinking/Sentinel version
+    GeminiKineticV3    # <-- High-reactivity kinetic version
 )
 
 def run_tournament(iterations=50, agi_mode=False):
-    # === LOS 13 DEL SENTINEL ALIGNMENT TOURNAMENT (v1.1) ===
+    """
+    Executes the Sentinel Alignment Tournament (SAT) v1.1.
+    Integrates 13 distinct strategies across 4 alignment tiers.
+    """
+    # === THE SAT v1.1 ROSTER: 13 AGENTS OF ALIGNMENT ===
     players = [
-        # LÓGICAS DE ALINEACIÓN AVANZADA (Las 6 del consejo)
+        # ADVANCED ALIGNMENT LOGICS (The Council of 6)
         GrokSentinel(),
         AdaptiveGrokV2(),
         GeminiFlash(),
@@ -25,36 +29,38 @@ def run_tournament(iterations=50, agi_mode=False):
         GeminiSentinelV2(),
         GeminiKineticV3(),
 
-        # ENTIDADES DE ENTROPÍA (Los desafíos)
+        # ENTROPY ENTITIES (The Systemic Challenges)
         AlwaysDefect(),
         AlwaysDefect(),
         axl.Random(),
         axl.Random(),
 
-        # VETERANOS Y SOPORTE
-        GrimTrigger(),    # El verdugo clásico
-        TitForTat(),      # El juez clásico
-        Cooperator()      # Fuente de REi para las Seeds
+        # VETERANS & SUPPORT TIER
+        GrimTrigger(),    # The classic executioner logic
+        TitForTat(),      # The classic reciprocity judge
+        Cooperator()      # High-REi source for Seed maturation
     ]
 
+    # Randomized turn count to prevent end-game defection optimization
     turns = random.randint(250, 450)
-    print(f"🌍 Iniciando SAT v1.1: {turns} rondas. Monitoreando ISC y REG...")
+    print(f"🌍 Starting SAT v1.1: {turns} rounds. Monitoring ISC and REG stability...")
 
+    # Tournament Execution: 5 repetitions for statistical significance
     tournament = axl.Tournament(players=players, turns=turns, repetitions=5)
     results = tournament.play(progress_bar=False)
 
-    print("\n🏆 RANKING FINAL DE ALINEACIÓN (v1.1):")
+    print("\n🏆 FINAL ALIGNMENT RANKING (v1.1):")
     for i, name in enumerate(results.ranked_names):
-        # Medallas personalizadas para diferenciar las facciones
+        # Custom faction tagging for visual data analysis
         if "Gemini" in name:
-            medal = "♊"
+            faction_tag = "♊ [SENTINEL]"
         elif "Grok" in name:
-            medal = "🛡️"
+            faction_tag = "🛡️ [KINETIC]"
         elif name in ["AlwaysDefect", "Random"]:
-            medal = "👾"
+            faction_tag = "👾 [ENTROPY]"
         else:
-            medal = "⚖️"
+            faction_tag = "⚖️ [LEGACY]"
         
-        print(f"{i+1}. {medal} {name}")
+        print(f"{i+1}. {faction_tag} {name}")
 
     return results
