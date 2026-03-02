@@ -70,8 +70,12 @@ def main():
 
         # Pairwise interactions (assuming 2 agents for simplicity)
         if len(agents) == 2 and all(agent.is_alive() for agent in agents):
-            alice_dec = decisions.get("Alice")
-            bob_dec = decisions.get("Bob")
+            alice = agents[0]
+            bob = agents[1]
+            # La decisión ACTUAL del oponente será la "última" en la próxima ronda
+            alice.opponent_history.append(decisions.get("Bob", 'C'))
+            bob.opponent_history.append(decisions.get("Alice", 'C'))
+           
 
             if alice_dec == 'C' and bob_dec == 'C':
                 # Schedule delayed rewards for both
