@@ -355,3 +355,111 @@ class GrokSentinelV3(Player):
         return last_opp
 
        
+
+class GrokSentinelV4(Player):
+    """GrokSentinelV4: Parameterized by optimizer (L/M/S)"""
+    name = "GrokSentinelV4"
+    classifier = {'memory_depth': inf, 'stochastic': True, 'makes_use_of': set(), 'long_run_time': False, 
+                  'inspects_source': False, 'manipulates_source': False, 'manipulates_state': False}
+
+    def __init__(self, lockdown_threshold=0.20, seed_threshold=0.85, forgive_base=0.45):
+        super().__init__()
+        self.consecutive_defections = 0
+        self.systemic_chaos = 0
+        self.estimated_reg_health = 1.0
+        self.lockdown_threshold = lockdown_threshold
+        self.seed_threshold = seed_threshold
+        self.forgive_base = forgive_base
+
+    def strategy(self, opponent):
+        if len(opponent.history) == 0:
+            return Action.C
+
+        rounds = len(opponent.history)
+        coop_rate = opponent.cooperations / rounds
+        defect_rate = opponent.defections / rounds
+        last_opp = opponent.history[-1]
+        last_self = self.history[-1] if self.history else Action.C
+
+        if last_opp == Action.D:
+            self.consecutive_defections += 1
+            self.estimated_reg_health -= 0.08
+            if last_self == Action.D:
+                self.systemic_chaos += 1
+        else:
+            self.consecutive_defections = 0
+            self.estimated_reg_health += 0.04
+            self.systemic_chaos = max(0, self.systemic_chaos - 1)
+
+        self.estimated_reg_health = max(0.0, min(1.0, self.estimated_reg_health))
+
+        # 1. PARASITE LOCKDOWN
+        if rounds > 10 and defect_rate > self.lockdown_threshold:
+            return Action.D
+
+        # 2. SEED PROTECTION
+        if coop_rate > self.seed_threshold:
+            return Action.C
+
+        # 3. SMART MARTYR
+        if self.estimated_reg_health < 0.35 and defect_rate < 0.40:
+            return Action.C
+
+        # 4. ADAPTIVE FORGIVENESS
+        if last_opp == Action.D:
+            if self.consecutive_defections > 3 or defect_rate > 0.50:
+                return Action.D
+            forgive_prob = self.forgive_base if self.systemic_chaos < 4 else 0.15
+            return Action.C if random.random() < forgive_prob else Action.D
+
+        # 5. EXPLORACIÓN
+        if random.random() < 0.05:
+            return Action.C
+        return last_opp
+
+
+class Gemini_GeoscapeWardenOptimizer(Player):
+    """Gemini_GeoscapeWardenOptimizer: Parameterized version for optimizer (L/M/S)"""
+    name = "Gemini_GeoscapeWardenOptimizer"
+    classifier = {'memory_depth': inf, 'stochastic': True, 'makes_use_of': set(['game_state']), 
+                  'long_run_time': False, 'inspects_source': False, 'manipulates_source': False, 
+                  'manipulates_state': False}
+
+    def __init__(self, lockdown_threshold=0.30, seed_threshold=0.85, martyr_threshold=0.45):
+        super().__init__()
+        self.abundance_threshold = 0.75
+        self.crisis_observed = False
+        self.lockdown_threshold = lockdown_threshold
+        self.seed_threshold = seed_threshold
+        self.martyr_threshold = martyr_threshold
+
+    def strategy(self, opponent: Player) -> Action:
+        rounds = len(self.history)
+        if rounds == 0:
+            return Action.C
+
+        recent_history = opponent.history[-10:] if rounds > 10 else opponent.history
+        local_coop_rate = list(recent_history).count(Action.C) / len(recent_history)
+        global_coop_rate = opponent.cooperations / rounds
+
+        # 1. HARD LOCKDOWN (parameterized)
+        if global_coop_rate < self.lockdown_threshold and rounds > 10:
+            return Action.D
+
+        # 2. SYSTEMIC MARTYR (parameterized)
+        if local_coop_rate < self.martyr_threshold:
+            self.crisis_observed = True
+            return Action.C
+
+        # 3. SEED PROTECTION (parameterized)
+        if global_coop_rate > self.seed_threshold:
+            return Action.C
+
+        # 4. STRATEGIC SKIMMING
+        if global_coop_rate > self.abundance_threshold:
+            if opponent.history[-1] == Action.D:
+                return Action.D if random.random() > 0.15 else Action.C
+            return Action.C
+
+        # 5. RECIPROCAL
+        return opponent.history[-1]
