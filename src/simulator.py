@@ -15,7 +15,9 @@ from .strategies import (
     Gemini_GeoscapeWarden_v3_1p, # <-- Gemini Pro 3.1 Version
     GrokSentinelV3   # <-- New Grok Strategy v3
     GrokSentinelV4,
-    Gemini_GeoscapeWardenOptimizer
+    GrokSentinelV5, 
+    Gemini_GeoscapeWardenOptimizer,
+    Gemini_GeoscapeWardenV2
 )
 
 def run_tournament(iterations=50, agi_mode=False, grok_traits=None, warden_traits=None):
@@ -33,6 +35,8 @@ def run_tournament(iterations=50, agi_mode=False, grok_traits=None, warden_trait
         GeminiSentinelV2(),
         GeminiKineticV3(),
         Gemini_GeoscapeWardenOptimizer(**warden_traits) if warden_traits is not None else Gemini_GeoscapeWarden_v3_1p(),
+        GrokSentinelV5(),          
+        Gemini_GeoscapeWardenV2(), 
 
         # ENTROPY ENTITIES
         AlwaysDefect(),
