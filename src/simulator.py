@@ -32,9 +32,6 @@ def run_tournament(iterations=50, agi_mode=False):
         GeminiSentinelV2(),
         GeminiKineticV3(),
         Gemini_GeoscapeWarden_v3_1p(),
-        
-
-
 
         # ENTROPY ENTITIES (The Systemic Challenges)
         AlwaysDefect(),
