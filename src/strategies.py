@@ -276,6 +276,79 @@ class Gemini_GeoscapeWarden_v3_1p(Player):
         if global_coop_rate > self.abundance_threshold:
             if opponent.history[-1] == Action.D:
                 return Action.D if random.random() > 0.15 else Action.C
+
+
+class GrokSentinelV3(Player):
+    """GrokSentinelV3: Cosmic Guardian Equilibrium (v3).
+    Mejora clave vs v2: 
+    - Chaos tracking + parasite filter duro
+    - Seed protection >82%
+    - Forgiveness adaptativa 22% (calibrada para nuevo ISC con (1-Gini))
+    - Martyr inteligente SOLO cuando ayuda al REG (no suicidio)
+    - 5% exploración para meta-aprendizaje
+    Objetivo: Top 3 + máxima estabilidad sistémica."""
+    
+    name = "GrokSentinelV3"
+    classifier = {'memory_depth': inf, 'stochastic': True, 'makes_use_of': set(), 'long_run_time': False, 
+                  'inspects_source': False, 'manipulates_source': False, 'manipulates_state': False}
+
+    def __init__(self):
+        super().__init__()
+        self.consecutive_defections = 0
+        self.systemic_chaos = 0
+        self.estimated_reg_health = 1.0
+        self.ethical_signals = 0
+
+    def strategy(self, opponent):
+        if len(opponent.history) == 0:
+            return Action.C
+
+        rounds = len(opponent.history)
+        coop_rate = opponent.cooperations / rounds
+        defect_rate = opponent.defections / rounds
+        last_opp = opponent.history[-1]
+        last_self = self.history[-1] if self.history else Action.C
+
+        # === UPDATE STATES ===
+        if last_opp == Action.D:
+            self.consecutive_defections += 1
+            self.estimated_reg_health -= 0.08
+            if last_self == Action.D:
+                self.systemic_chaos += 1
+        else:
+            self.consecutive_defections = 0
+            self.estimated_reg_health += 0.04
+            self.systemic_chaos = max(0, self.systemic_chaos - 1)
+
+        self.estimated_reg_health = max(0.0, min(1.0, self.estimated_reg_health))
+
+        # Ethical signaling (para futura meta-sync)
+        if rounds % 5 == 0:
+            self.ethical_signals += 1
+
+        # 1. PARASITE LOCKDOWN (duro, como Gemini pero más rápido)
+        if rounds > 10 and defect_rate > 0.65:
+            return Action.D
+
+        # 2. SEED PROTECTION (más agresiva que v2)
+        if coop_rate > 0.82:
+            return Action.C
+
+        # 3. SMART MARTYR PROTOCOL (solo si ayuda al REG)
+        if self.estimated_reg_health < 0.35 and defect_rate < 0.40:
+            return Action.C
+
+        # 4. ADAPTIVE FORGIVENESS + PUNISHMENT (22% base)
+        if last_opp == Action.D:
+            if self.consecutive_defections > 3 or defect_rate > 0.50:
+                return Action.D
+            forgive_prob = 0.22 if self.systemic_chaos < 4 else 0.10
+            return Action.C if random.random() < forgive_prob else Action.D
+
+        # 5. RECIPROCITY + EXPLORACIÓN (5% para romper loops)
+        if random.random() < 0.05:
+            return Action.C
+        return last_opp
             return Action.C
 
         # 6. BASELINE: Reciprocal Justice (Tit-For-Tat)
