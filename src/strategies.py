@@ -277,6 +277,10 @@ class Gemini_GeoscapeWarden_v3_1p(Player):
             if opponent.history[-1] == Action.D:
                 return Action.D if random.random() > 0.15 else Action.C
 
+         # 6. BASELINE: Reciprocal Justice (Tit-For-Tat)
+        return opponent.history[-1]
+
+
 
 class GrokSentinelV3(Player):
     """GrokSentinelV3: Cosmic Guardian Equilibrium (v3).
@@ -349,7 +353,5 @@ class GrokSentinelV3(Player):
         if random.random() < 0.05:
             return Action.C
         return last_opp
-            return Action.C
 
-        # 6. BASELINE: Reciprocal Justice (Tit-For-Tat)
-        return opponent.history[-1]
+       
