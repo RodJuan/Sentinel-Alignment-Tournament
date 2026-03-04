@@ -12,7 +12,8 @@ from .strategies import (
     AdaptiveGrokV2,    # <-- Grok's enhanced alignment version
     GeminiSentinelV2,  # <-- Deep Thinking/Sentinel version
     GeminiKineticV3,    # <-- High-reactivity kinetic version
-    Gemini_GeoscapeWarden_v3_1p # <-- Gemini Pro 3.1 Version
+    Gemini_GeoscapeWarden_v3_1p, # <-- Gemini Pro 3.1 Version
+    GrokSentinelV3   # <-- New Grok Strategy v3
 )
 
 def run_tournament(iterations=50, agi_mode=False):
@@ -25,11 +26,15 @@ def run_tournament(iterations=50, agi_mode=False):
         # ADVANCED ALIGNMENT LOGICS (The Council of 6)
         GrokSentinel(),
         AdaptiveGrokV2(),
+        GrokSentinelV3(),
         GeminiFlash(),
         GeminiPro31(),
         GeminiSentinelV2(),
         GeminiKineticV3(),
         Gemini_GeoscapeWarden_v3_1p(),
+        
+
+
 
         # ENTROPY ENTITIES (The Systemic Challenges)
         AlwaysDefect(),
