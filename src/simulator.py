@@ -14,6 +14,8 @@ from .strategies import (
     GeminiKineticV3,    # <-- High-reactivity kinetic version
     Gemini_GeoscapeWarden_v3_1p, # <-- Gemini Pro 3.1 Version
     GrokSentinelV3   # <-- New Grok Strategy v3
+    GrokSentinelV4,
+    Gemini_GeoscapeWardenOptimizer
 )
 
 def run_tournament(iterations=50, agi_mode=False):
