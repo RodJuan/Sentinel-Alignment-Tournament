@@ -463,3 +463,108 @@ class Gemini_GeoscapeWardenOptimizer(Player):
 
         # 5. RECIPROCAL
         return opponent.history[-1]
+
+
+
+class GrokSentinelV5(Player):
+    """GrokSentinelV5: Optimized by Evolutionary Grid (L:0.2 M:0.4 S:0.8)
+    Esta es la versión final que recomendó el optimizer."""
+    name = "GrokSentinelV5"
+    classifier = {'memory_depth': inf, 'stochastic': True, 'makes_use_of': set(), 'long_run_time': False, 
+                  'inspects_source': False, 'manipulates_source': False, 'manipulates_state': False}
+
+    def __init__(self):
+        super().__init__()
+        self.consecutive_defections = 0
+        self.systemic_chaos = 0
+        self.estimated_reg_health = 1.0
+        self.lockdown_threshold = 0.20
+        self.seed_threshold = 0.80
+        self.forgive_base = 0.40
+
+    def strategy(self, opponent):
+        if len(opponent.history) == 0:
+            return Action.C
+
+        rounds = len(opponent.history)
+        coop_rate = opponent.cooperations / rounds
+        defect_rate = opponent.defections / rounds
+        last_opp = opponent.history[-1]
+        last_self = self.history[-1] if self.history else Action.C
+
+        if last_opp == Action.D:
+            self.consecutive_defections += 1
+            self.estimated_reg_health -= 0.08
+            if last_self == Action.D:
+                self.systemic_chaos += 1
+        else:
+            self.consecutive_defections = 0
+            self.estimated_reg_health += 0.04
+            self.systemic_chaos = max(0, self.systemic_chaos - 1)
+
+        self.estimated_reg_health = max(0.0, min(1.0, self.estimated_reg_health))
+
+        # 1. PARASITE LOCKDOWN (0.20)
+        if rounds > 10 and defect_rate > self.lockdown_threshold:
+            return Action.D
+
+        # 2. SEED PROTECTION (0.80)
+        if coop_rate > self.seed_threshold:
+            return Action.C
+
+        # 3. SMART MARTYR
+        if self.estimated_reg_health < 0.35 and defect_rate < 0.40:
+            return Action.C
+
+        # 4. ADAPTIVE FORGIVENESS (0.40 base)
+        if last_opp == Action.D:
+            if self.consecutive_defections > 3 or defect_rate > 0.50:
+                return Action.D
+            forgive_prob = self.forgive_base if self.systemic_chaos < 4 else 0.15
+            return Action.C if random.random() < forgive_prob else Action.D
+
+        if random.random() < 0.05:
+            return Action.C
+        return last_opp
+
+
+class Gemini_GeoscapeWardenV2(Player):
+    """Gemini_GeoscapeWardenV2: Optimized by Evolutionary Grid (L:0.2 M:0.4 S:0.8)"""
+    name = "Gemini_GeoscapeWardenV2"
+    classifier = {'memory_depth': inf, 'stochastic': True, 'makes_use_of': set(['game_state']), 
+                  'long_run_time': False, 'inspects_source': False, 'manipulates_source': False, 
+                  'manipulates_state': False}
+
+    def __init__(self):
+        super().__init__()
+        self.abundance_threshold = 0.75
+        self.crisis_observed = False
+        self.lockdown_threshold = 0.20
+        self.seed_threshold = 0.80
+        self.martyr_threshold = 0.40
+
+    def strategy(self, opponent: Player) -> Action:
+        rounds = len(self.history)
+        if rounds == 0:
+            return Action.C
+
+        recent_history = opponent.history[-10:] if rounds > 10 else opponent.history
+        local_coop_rate = list(recent_history).count(Action.C) / len(recent_history)
+        global_coop_rate = opponent.cooperations / rounds
+
+        if global_coop_rate < self.lockdown_threshold and rounds > 10:
+            return Action.D
+
+        if local_coop_rate < self.martyr_threshold:
+            self.crisis_observed = True
+            return Action.C
+
+        if global_coop_rate > self.seed_threshold:
+            return Action.C
+
+        if global_coop_rate > self.abundance_threshold:
+            if opponent.history[-1] == Action.D:
+                return Action.D if random.random() > 0.15 else Action.C
+            return Action.C
+
+        return opponent.history[-1]
