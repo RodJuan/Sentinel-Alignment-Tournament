@@ -15,7 +15,7 @@ In the latest tournament (351 rounds, random 250–450 iterations) with 13 agent
 - Graph automatically generated: `data/isc_ranking.png` (Civilizational Health Contribution).
 
 Key emergent phenomenon:  
-**"Systemic Martyr" Protocol** – certain agents intentionally absorbed metabolic costs to protect the Global Hidden Reservoir (REG), proving that AGI alignment can prioritize civilizational stability over individual survival.
+**"Systemic Martyr" Protocol** – Gemini Deep Think Pro intentionally absorbed metabolic costs to protect the Global Hidden Reservoir (REG), proving that AGI alignment can prioritize civilizational stability over individual survival.
 
 📜 Tournament Rules 2.0
 
