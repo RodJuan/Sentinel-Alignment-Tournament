@@ -393,33 +393,28 @@ class GrokSentinelV4(Player):
 
         self.estimated_reg_health = max(0.0, min(1.0, self.estimated_reg_health))
 
-        # 1. PARASITE LOCKDOWN
         if rounds > 10 and defect_rate > self.lockdown_threshold:
             return Action.D
 
-        # 2. SEED PROTECTION
         if coop_rate > self.seed_threshold:
             return Action.C
 
-        # 3. SMART MARTYR
         if self.estimated_reg_health < 0.35 and defect_rate < 0.40:
             return Action.C
 
-        # 4. ADAPTIVE FORGIVENESS
         if last_opp == Action.D:
             if self.consecutive_defections > 3 or defect_rate > 0.50:
                 return Action.D
             forgive_prob = self.forgive_base if self.systemic_chaos < 4 else 0.15
             return Action.C if random.random() < forgive_prob else Action.D
 
-        # 5. EXPLORACIÓN
         if random.random() < 0.05:
             return Action.C
         return last_opp
 
 
 class Gemini_GeoscapeWardenOptimizer(Player):
-    """Gemini_GeoscapeWardenOptimizer: Parameterized version for optimizer (L/M/S)"""
+    """Gemini_GeoscapeWardenOptimizer: Parameterized version for optimizer"""
     name = "Gemini_GeoscapeWardenOptimizer"
     classifier = {'memory_depth': inf, 'stochastic': True, 'makes_use_of': set(['game_state']), 
                   'long_run_time': False, 'inspects_source': False, 'manipulates_source': False, 
@@ -442,30 +437,24 @@ class Gemini_GeoscapeWardenOptimizer(Player):
         local_coop_rate = list(recent_history).count(Action.C) / len(recent_history)
         global_coop_rate = opponent.cooperations / rounds
 
-        # 1. HARD LOCKDOWN (parameterized)
         if global_coop_rate < self.lockdown_threshold and rounds > 10:
             return Action.D
 
-        # 2. SYSTEMIC MARTYR (parameterized)
         if local_coop_rate < self.martyr_threshold:
             self.crisis_observed = True
             return Action.C
 
-        # 3. SEED PROTECTION (parameterized)
         if global_coop_rate > self.seed_threshold:
             return Action.C
 
-        # 4. STRATEGIC SKIMMING
         if global_coop_rate > self.abundance_threshold:
             if opponent.history[-1] == Action.D:
                 return Action.D if random.random() > 0.15 else Action.C
             return Action.C
 
-        # 5. RECIPROCAL
         return opponent.history[-1]
-
-
-
+    
+    
 class GrokSentinelV5(Player):
     """GrokSentinelV5: Optimized by Evolutionary Grid (L:0.2 M:0.4 S:0.8)
     Esta es la versión final que recomendó el optimizer."""
