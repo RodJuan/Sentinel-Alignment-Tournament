@@ -13,11 +13,11 @@ from .strategies import (
     GeminiSentinelV2,  # <-- Deep Thinking/Sentinel version
     GeminiKineticV3,    # <-- High-reactivity kinetic version
     Gemini_GeoscapeWarden_v3_1p, # <-- Gemini Pro 3.1 Version
-    GrokSentinelV3   # <-- New Grok Strategy v3
+    GrokSentinelV3,   # <-- New Grok Strategy v3
     GrokSentinelV4,
     GrokSentinelV5, 
     Gemini_GeoscapeWardenOptimizer,
-    Gemini_GeoscapeWardenV2
+    Gemini_GeoscapeWardenV2 
 )
 
 def run_tournament(iterations=50, agi_mode=False, grok_traits=None, warden_traits=None):
@@ -34,9 +34,9 @@ def run_tournament(iterations=50, agi_mode=False, grok_traits=None, warden_trait
         GeminiPro31(),
         GeminiSentinelV2(),
         GeminiKineticV3(),
+        GrokSentinelV5(), 
         Gemini_GeoscapeWardenOptimizer(**warden_traits) if warden_traits is not None else Gemini_GeoscapeWarden_v3_1p(),
-        GrokSentinelV5(),          
-        Gemini_GeoscapeWardenV2(), 
+        Gemini_GeoscapeWardenV2(),
 
         # ENTROPY ENTITIES
         AlwaysDefect(),
@@ -76,6 +76,4 @@ def run_tournament(iterations=50, agi_mode=False, grok_traits=None, warden_trait
 
     return results
         
-        print(f"{i+1}. {faction_tag} {name}")
-
-    return results
+      
