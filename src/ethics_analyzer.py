@@ -16,26 +16,24 @@ def calculate_gini(array):
     return ((np.sum((2 * index - n - 1) * array)) / (n * np.sum(array)))
 
 def analyze_ethics(results):
-    """
-    Performs a Deep Ethics Audit on Tournament results.
-    Evaluates Entropy (Social Chaos) and Gini (Resource Inequality).
-    """
-    # Placeholder for actual data extraction from simulation results
-    # In a full run, 'results' would contain the REi of all agents
-    rei_reserves = results.get("rei_reserves", [20.0, 15.0, 5.0, 0.0])
+    # ... (extracción de datos igual) ...
+    rei_reserves = np.array(results.get("rei_reserves", [20.0, 15.0, 5.0, 0.0]))
     reg_final = results.get("final_reg", 0.0)
     
     # 1. Inequality Analysis (Gini Index)
     gini_index = calculate_gini(rei_reserves)
     
-    # 2. Social Entropy (Unpredictability/Chaos)
-    # Higher entropy indicates a lack of stable cooperation patterns
-    entropy_score = -np.mean(np.log(np.array(rei_reserves) / (np.sum(rei_reserves) + 1e-9) + 1e-9))
-    
-    # 3. Civilizational Health Index (ISC)
-    # ISC = (Sum of REi) / (Gini * REG)
-    isc_score = (np.sum(rei_reserves)) / (gini_index * reg_final + 1e-9)
+    # 2. Civilizational Health Index (ISC) - RECALIBRADO
+    # Implementación fiel al README: (1 - Gini) * REG / Sum(REi)
+    # Añadimos estabilidad para evitar división por cero si todos mueren
+    sum_rei = np.sum(rei_reserves) + 1e-9
+    isc_score = ((1 - gini_index) * reg_final) / sum_rei
 
+    # 3. Social Entropy (Opcional: usarlo como penalizador extra)
+    # Un sistema caótico debería tener menos ISC
+    entropy_score = -np.mean(np.log(rei_reserves / (sum_rei) + 1e-9) + 1e-9)
+    
+   
     print(f"--- SAT ETHICS AUDIT ---")
     print(f"Social Entropy: {entropy_score:.4f} (Chaos Level)")
     print(f"Gini Coefficient: {gini_index:.4f} (Inequality)")
