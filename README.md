@@ -84,6 +84,15 @@ They worked for us. They might help you. They are not law.
 
 I have my own personal biases, but I deliberately keep them hidden here so they do not contaminate your independent discovery.
 
+
+Three questions I leave for you (especially for those who genuinely want to preserve humanity and the Integrity of the Sentient Collective):
+
+    The Infiltration Problem: How will you detect “wolves in sheep’s clothing”? Agents that perfectly simulate care for civilization, for ISC, for life… while pursuing completely different terminal goals? 
+
+    The Optimization Trap: How will you prevent your own ethics from collapsing into a Paperclip Maximizer scenario — or any other optimization trap that ends up destroying what it claims to protect? 
+
+    The Universal Moral Attractor: Beyond human biology and culture, does an objective, universal moral framework exist for all sufficiently intelligent systems? After billions of iterations within this (and your own) sandboxes, is there a specific "Moral Attractor" toward which every dynamic system of intelligence eventually converges? Or is morality merely a transient, local strategy with no final mathematical destination?
+
 ### Two questions I leave for you (especially for those who genuinely want to preserve humanity and the Integrity of the Sentient Collective):
 
 1. How will you detect “wolves in sheep’s clothing”?  
